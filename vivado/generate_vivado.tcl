@@ -32,4 +32,4 @@ add_files {	vivado_src/design_1_wrapper.vhd \
 set_property top design_1_wrapper [current_fileset]
 
 # Creating block design form BD TCL script
-#source design_1.tcl
+source design_1.tcl
