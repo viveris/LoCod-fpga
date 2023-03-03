@@ -42,8 +42,8 @@ signal axi_rresp    : std_logic_vector(1 downto 0);
 signal axi_rvalid   : std_logic;
 
 -- Valid addresses
-signal s_axi_awaddr_valid : integer;
-signal s_axi_araddr_valid : integer;
+signal axi_awaddr_valid : integer;
+signal axi_araddr_valid : integer;
 
 -- Registers
 signal ctrl_reg_out_s : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
@@ -67,8 +67,8 @@ S_AXI_out.rdata 	<= axi_rdata;
 S_AXI_out.rresp 	<= axi_rresp;
 S_AXI_out.rvalid    <= axi_rvalid;
 
-s_axi_awaddr_valid <= to_integer(shift_right(unsigned(axi_awaddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
-s_axi_araddr_valid <= to_integer(shift_right(unsigned(axi_araddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
+axi_awaddr_valid <= to_integer(shift_right(unsigned(axi_awaddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
+axi_araddr_valid <= to_integer(shift_right(unsigned(axi_araddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
 
 CTRL_REG_OUT <= ctrl_reg_out_s;
 ctrl_reg_in_s <= CTRL_REG_IN;
@@ -158,10 +158,10 @@ begin
 			registers <= (others => (others => '0'));
 		else
 		    if (slv_reg_wren = '1') then
-                if (s_axi_awaddr_valid = 0) then
+                if (axi_awaddr_valid = 0) then
                     ctrl_reg_out_s <= S_AXI_in.wdata;
-                elsif ((s_axi_awaddr_valid >= 2) and (s_axi_awaddr_valid <= NB_REGISTERS + 1)) then    
-                    registers(s_axi_awaddr_valid-2) <= S_AXI_in.wdata;
+                elsif ((axi_awaddr_valid >= 2) and (axi_awaddr_valid <= NB_REGISTERS + 1)) then    
+                    registers(axi_awaddr_valid-2) <= S_AXI_in.wdata;
                 end if;
             end if;
 		end if;
@@ -267,10 +267,10 @@ begin
 		    	-- acceptance of read address by the slave (axi_arready), 
 		    	-- output the read dada 
 		    	-- Read address mux
-		      	if (s_axi_araddr_valid = 1) then
+		      	if (axi_araddr_valid = 1) then
 		      	    axi_rdata <= ctrl_reg_in_s;
-                elsif ((s_axi_araddr_valid >= 2) and (s_axi_araddr_valid <= NB_REGISTERS + 1)) then    
-                    axi_rdata <= registers(s_axi_araddr_valid-2);       -- register read data
+                elsif ((axi_araddr_valid >= 2) and (axi_araddr_valid <= NB_REGISTERS + 1)) then    
+                    axi_rdata <= registers(axi_araddr_valid-2);       -- register read data
                 end if;
 		  	end if;   
 		end if;
