@@ -11,6 +11,7 @@ set_property target_language VHDL [current_project]
 
 # Importing source files
 add_files {	vivado_src/design_1_wrapper.vhd \
+			vivado_src/top_wrapper.vhd \
 			../src/generated_files/acc_0.vhd \
 			../src/generated_files/acc_1.vhd \
 			../src/generated_files/acc_2.vhd \
@@ -31,4 +32,4 @@ add_files {	vivado_src/design_1_wrapper.vhd \
 set_property top design_1_wrapper [current_fileset]
 
 # Creating block design form BD TCL script
-source design_1.tcl
+#source design_1.tcl

@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
+use work.locod_pkg.all;
 
 entity accelerator is
 generic(
@@ -8,44 +9,24 @@ generic(
 );
 port(
     -- IN
-    clk : in std_logic;
-    rst : in std_logic;
-    start : in std_logic;
-    reset : in std_logic;
-    param : in std_logic_vector(31 downto 0);
-    result : in std_logic_vector(31 downto 0);
+    clk 				: in std_logic;
+    rst 				: in std_logic;
+    start 				: in std_logic;
+    reset 				: in std_logic;
+    param 				: in std_logic_vector(31 downto 0);
+    result 				: in std_logic_vector(31 downto 0);
     
     -- OUT
-    status_end_process : out std_logic;
+    status_end_process 	: out std_logic;
     
-    M_AXI_awaddr : out std_logic_vector(31 downto 0);
-    M_AXI_awprot : out std_logic_vector(2 downto 0);
-    M_AXI_awvalid : out std_logic;
-    M_AXI_awready : in std_logic;
-    
-    M_AXI_wdata : out std_logic_vector(31 downto 0);
-    M_AXI_wstrb : out std_logic_vector(3 downto 0);
-    M_AXI_wvalid : out std_logic;
-    M_AXI_wready : in std_logic;
-    
-    M_AXI_bresp : in std_logic_vector(1 downto 0);
-    M_AXI_bvalid : in std_logic;
-    M_AXI_bready : out std_logic;
-    
-    M_AXI_araddr : out std_logic_vector(31 downto 0);
-    M_AXI_arprot : out std_logic_vector(2 downto 0);
-    M_AXI_arvalid : out std_logic;
-    M_AXI_arready : in std_logic;
-    
-    M_AXI_rdata : in std_logic_vector(31 downto 0);
-    M_AXI_rresp : in std_logic_vector(1 downto 0);
-    M_AXI_rvalid : in std_logic;
-    M_AXI_rready : out std_logic
+    -- AXI4 LITE Bus
+	M_AXI_out       	: out AXI4Lite_m_to_s;
+    M_AXI_in        	: in AXI4Lite_s_to_m
 );
 end accelerator;
 
-architecture Behavioral of accelerator is
 
+architecture Behavioral of accelerator is
 
 signal ip_start : std_logic;
 signal ip_stop : std_logic;
@@ -60,6 +41,27 @@ signal data_rdy : std_logic;
 
 constant C_INIT_AXI_TXN : std_logic := '0';
 constant C_SIN_DATA_RAM_SIZE : std_logic_vector(5 downto 0) := "000000";
+
+-- TODO : Change master_memory_ctrl ports and then remove these signals
+signal M_AXI_awaddr : std_logic_vector(31 downto 0);
+signal M_AXI_awprot : std_logic_vector(2 downto 0);
+signal M_AXI_awvalid : std_logic;
+signal M_AXI_awready : std_logic;
+signal M_AXI_wdata : std_logic_vector(31 downto 0);
+signal M_AXI_wstrb : std_logic_vector(3 downto 0);
+signal M_AXI_wvalid : std_logic;
+signal M_AXI_wready : std_logic;
+signal M_AXI_bresp : std_logic_vector(1 downto 0);
+signal M_AXI_bvalid : std_logic;
+signal M_AXI_bready : std_logic;
+signal M_AXI_araddr : std_logic_vector(31 downto 0);
+signal M_AXI_arprot : std_logic_vector(2 downto 0);
+signal M_AXI_arvalid : std_logic;
+signal M_AXI_arready : std_logic;
+signal M_AXI_rdata : std_logic_vector(31 downto 0);
+signal M_AXI_rresp : std_logic_vector(1 downto 0);
+signal M_AXI_rvalid : std_logic;
+signal M_AXI_rready : std_logic;
 
 
 component acc_0 is 
@@ -208,6 +210,27 @@ end component;
 
 
 begin
+
+M_AXI_out.awaddr 	<= M_AXI_awaddr;
+M_AXI_out.awprot 	<= M_AXI_awprot;
+M_AXI_out.awvalid 	<= M_AXI_awvalid;     
+M_AXI_out.wdata 	<= M_AXI_wdata;
+M_AXI_out.wstrb 	<= M_AXI_wstrb;
+M_AXI_out.wvalid 	<= M_AXI_wvalid;       
+M_AXI_out.bready 	<= M_AXI_bready;          
+M_AXI_out.araddr 	<= M_AXI_araddr;
+M_AXI_out.arprot 	<= M_AXI_arprot;
+M_AXI_out.arvalid 	<= M_AXI_arvalid;
+M_AXI_out.rready 	<= M_AXI_rready;
+M_AXI_awready 		<= M_AXI_in.awready;
+M_AXI_wready 		<= M_AXI_in.wready;      
+M_AXI_bresp 		<= M_AXI_in.bresp;
+M_AXI_bvalid 		<= M_AXI_in.bvalid;       
+M_AXI_arready 		<= M_AXI_in.arready;        
+M_AXI_rdata 		<= M_AXI_in.rdata;
+M_AXI_rresp 		<= M_AXI_in.rresp;
+M_AXI_rvalid 		<= M_AXI_in.rvalid;
+
 
 start_stop_ctrl_inst : entity work.start_stop_ctrl
 port map (
