@@ -45,7 +45,7 @@ port (
 end MEMORY_CTRL_D21;
 
 
-architecture behavioral of MEMORY_CTRL_D21 is
+architecture Behavioral of MEMORY_CTRL_D21 is
 
 
 signal tmp_addr : std_logic_vector(BITSIZE_in2-1 downto 0);
@@ -84,4 +84,4 @@ begin
 	end if;
 end process;
 
-end behavioral;
+end Behavioral;

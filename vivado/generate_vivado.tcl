@@ -11,7 +11,6 @@ set_property target_language VHDL [current_project]
 
 # Importing source files
 add_files {	vivado_src/design_1_wrapper.vhd \
-			vivado_src/top_wrapper.vhd \
 			../src/generated_files/acc_0.vhd \
 			../src/generated_files/acc_1.vhd \
 			../src/generated_files/acc_2.vhd \
@@ -25,7 +24,10 @@ add_files {	vivado_src/design_1_wrapper.vhd \
 			../src/start_stop_ctrl/rtl/start_stop_ctrl.vhd \
 			../src/master_memory_ctrl/rtl/master_memory_ctrl.v \
 			../src/top_design/rtl/top.vhd \
+			../src/top_design/rtl/top_ip.vhd \
 			../src/common/memory_ctrl_d21.vhd \
+			../src/common/axi_master_if.vhd \
+			../src/common/axi_slave_if.vhd \
 			../src/common/locod_package.vhd }
 	
 # Setting top module	

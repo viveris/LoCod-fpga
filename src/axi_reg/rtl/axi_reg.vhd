@@ -24,7 +24,7 @@ port (
 );
 end axi_reg;
 
-architecture behavioral of axi_reg is
+architecture Behavioral of axi_reg is
 
 -- Constants
 constant VALID_ADDR_WIDTH 	: integer := AXI_REG_ADDR_WIDTH - 2;
@@ -278,4 +278,4 @@ begin
 end process;
 
 
-end behavioral;
+end Behavioral;
