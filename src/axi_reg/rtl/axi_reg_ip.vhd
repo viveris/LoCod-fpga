@@ -33,7 +33,7 @@ port (
     -- Output registers
     CTRL_REG_OUT    : out std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
     CTRL_REG_IN     : in std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-    REG_ARRAY_PORT  : out reg_array  
+    REG_ARRAY_PORT  : out reg_array
 );
 end axi_reg_ip;
 
