@@ -1,8 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
-use ieee.math_real.all;
 
 use work.locod_pkg.all;
 
@@ -30,12 +28,12 @@ architecture Behavioral of axi_reg is
 constant VALID_ADDR_WIDTH 	: integer := AXI_REG_ADDR_WIDTH - 2;
 
 -- AXI4 LITE signals
-signal axi_awaddr   : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+signal axi_awaddr   : std_logic_vector(AXI_REG_ADDR_WIDTH-1 downto 0);
 signal axi_awready  : std_logic;
 signal axi_wready   : std_logic;
 signal axi_bresp    : std_logic_vector(1 downto 0);
 signal axi_bvalid   : std_logic;
-signal axi_araddr   : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+signal axi_araddr   : std_logic_vector(AXI_REG_ADDR_WIDTH-1 downto 0);
 signal axi_arready  : std_logic;
 signal axi_rdata    : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
 signal axi_rresp    : std_logic_vector(1 downto 0);
@@ -108,7 +106,7 @@ begin
     	else
       		if (axi_awready = '0' and S_AXI_in.awvalid = '1' and S_AXI_in.wvalid = '1') then
         		-- Write Address latching
-        		axi_awaddr <= S_AXI_in.awaddr;
+        		axi_awaddr <= S_AXI_in.awaddr(AXI_REG_ADDR_WIDTH-1 downto 0);
       		end if;
     	end if;
   	end if;                   
@@ -211,7 +209,7 @@ begin
         		-- indicates that the slave has acceped the valid read address
         		axi_arready <= '1';
         		-- Read Address latching 
-        		axi_araddr  <= S_AXI_in.araddr;
+        		axi_araddr  <= S_AXI_in.araddr(AXI_REG_ADDR_WIDTH-1 downto 0);
       		else
         		axi_arready <= '0';
       		end if;
@@ -226,7 +224,7 @@ end process;
 -- S_AXI_arvalid and axi_arready are asserted. The slave registers 
 -- data are available on the axi_rdata bus at this instance. The 
 -- assertion of axi_rvalid marks the validity of read data on the 
--- bus and axi_rresp indicates the status of read transaction.axi_rvalid 
+-- bus and axi_rresp indicates the status of read transaction. axi_rvalid 
 -- is deasserted on reset (active low). axi_rresp and axi_rdata are 
 -- cleared to zero on reset (active low).  
 process (clk)
@@ -267,7 +265,9 @@ begin
 		    	-- acceptance of read address by the slave (axi_arready), 
 		    	-- output the read dada 
 		    	-- Read address mux
-		      	if (axi_araddr_valid = 1) then
+		    	if (axi_araddr_valid = 0) then
+		      	    axi_rdata <= ctrl_reg_out_s;
+		      	elsif (axi_araddr_valid = 1) then
 		      	    axi_rdata <= ctrl_reg_in_s;
                 elsif ((axi_araddr_valid >= 2) and (axi_araddr_valid <= NB_REGISTERS + 1)) then    
                     axi_rdata <= registers(axi_araddr_valid-2);       -- register read data
