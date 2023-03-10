@@ -1,11 +1,15 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 use work.locod_pkg.all;
 
 
 entity axi_reg is
+generic (
+    NB_REGISTERS    : integer
+);
 port (
 	-- Clock and reset
     clk      		: in std_logic;
@@ -18,14 +22,14 @@ port (
     -- Output registers
     CTRL_REG_OUT    : out std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
     CTRL_REG_IN     : in std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-    REG_ARRAY_PORT  : out reg_array  
+    REG_ARRAY_PORT  : out reg_array(0 to NB_REGISTERS-1)
 );
 end axi_reg;
 
 architecture Behavioral of axi_reg is
 
 -- Constants
-constant VALID_ADDR_WIDTH 	: integer := AXI_REG_ADDR_WIDTH - 2;
+constant AXI_REG_ADDR_WIDTH : integer := integer(ceil(log2(real((NB_REGISTERS+2)*4)))); --Address range that we use over bytes
 
 -- AXI4 LITE signals
 signal axi_awaddr   : std_logic_vector(AXI_REG_ADDR_WIDTH-1 downto 0);
@@ -46,7 +50,7 @@ signal axi_araddr_valid : integer;
 -- Registers
 signal ctrl_reg_out_s : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
 signal ctrl_reg_in_s : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal registers : reg_array;
+signal registers : reg_array(0 to NB_REGISTERS-1);
 
 -- Others
 signal slv_reg_rden : std_logic;
@@ -65,8 +69,8 @@ S_AXI_out.rdata 	<= axi_rdata;
 S_AXI_out.rresp 	<= axi_rresp;
 S_AXI_out.rvalid    <= axi_rvalid;
 
-axi_awaddr_valid <= to_integer(shift_right(unsigned(axi_awaddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
-axi_araddr_valid <= to_integer(shift_right(unsigned(axi_araddr), (AXI_REG_ADDR_WIDTH-VALID_ADDR_WIDTH)));
+axi_awaddr_valid <= to_integer(shift_right(unsigned(axi_awaddr), 2));
+axi_araddr_valid <= to_integer(shift_right(unsigned(axi_araddr), 2));
 
 CTRL_REG_OUT <= ctrl_reg_out_s;
 ctrl_reg_in_s <= CTRL_REG_IN;

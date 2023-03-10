@@ -5,6 +5,9 @@ use work.locod_pkg.all;
 
 
 entity top is
+generic(
+    NB_ACCELERATORS     : integer
+);
 port(
 	-- Clock and reset
     clk 				: in std_logic;
@@ -15,8 +18,8 @@ port(
     S_AXI_out 			: out AXI4Lite_s_to_m;
     
     -- AXI Master Accelerator array
-    M_AXI_out_array 	: out AXI4Lite_m_to_s_array;
-    M_AXI_in_array 		: in AXI4Lite_s_to_m_array
+    M_AXI_out_array 	: out AXI4Lite_m_to_s_array(0 to NB_ACCELERATORS-1);
+    M_AXI_in_array 		: in AXI4Lite_s_to_m_array(0 to NB_ACCELERATORS-1)
 );
 end top;
 
@@ -24,13 +27,16 @@ architecture Behavioral of top is
 
 signal ctrl_reg_out : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
 signal ctrl_reg_in : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal registers : reg_array; 
+signal registers : reg_array(0 to (2*NB_ACCELERATORS)-1);
 
 
 begin
 
 
 axi_reg_inst : entity work.axi_reg
+generic map(
+    NB_REGISTERS    => 2*NB_ACCELERATORS
+)
 port map(
 	clk 		    => clk,
 	rst 	        => rst,
@@ -45,7 +51,7 @@ port map(
 accelerators_inst : for i in 0 to NB_ACCELERATORS-1 generate
     accelerator_inst : entity work.accelerator
     generic map(
-        acc_num => i
+        acc_num             => i
     )
     port map(
         clk					=> clk,

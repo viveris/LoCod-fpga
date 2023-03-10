@@ -5,6 +5,9 @@ use work.locod_pkg.all;
 
 
 entity top_ip is
+generic (
+    NB_ACCELERATORS :integer
+);
 port(
 	-- Clock and reset
     clk : in std_logic;
@@ -199,20 +202,23 @@ architecture Behavioral of top_ip is
 
 signal S_AXI_in : AXI4Lite_m_to_s;
 signal S_AXI_out : AXI4Lite_s_to_m;
-signal M_AXI_out_array : AXI4Lite_m_to_s_array;
-signal M_AXI_in_array : AXI4Lite_s_to_m_array; 		
+signal M_AXI_out_array : AXI4Lite_m_to_s_array(0 to 7);
+signal M_AXI_in_array : AXI4Lite_s_to_m_array(0 to 7); 		
 
 
 begin
 
 top_inst : entity work.top
+generic map(
+    NB_ACCELERATORS     => NB_ACCELERATORS
+)
 port map(
     clk 				=> clk,
     rst 				=> rst,
     S_AXI_in 			=> S_AXI_in,
     S_AXI_out 			=> S_AXI_out,
-    M_AXI_out_array 	=> M_AXI_out_array,
-    M_AXI_in_array 		=> M_AXI_in_array
+    M_AXI_out_array 	=> M_AXI_out_array(0 to NB_ACCELERATORS-1),
+    M_AXI_in_array 		=> M_AXI_in_array(0 to NB_ACCELERATORS-1)
 );
 
 axi_slave_if_0 : entity work.axi_slave_if
