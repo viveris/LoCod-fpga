@@ -26,9 +26,8 @@ async def test_axi_reg(dut):
 	await FallingEdge(clk)
 
 	# Testing the DUT
-	nb_reg = 6
+	nb_reg = 8
 	test_data = 123
-	dut.CTRL_REG_IN.value = test_data
 
 	for i in range(nb_reg):
 		addr = 4*i
@@ -36,10 +35,12 @@ async def test_axi_reg(dut):
 			await master.write_dword(addr, test_data)
 			assert dut.CTRL_REG_OUT.value == test_data, "ctrl_reg_out port value not OK"
 		elif addr == 4 :
-			assert await master.read_dword(addr) == test_data, "ctrl_reg_in port value not OK"
+			dut.CTRL_REG_IN.value = test_data
+			assert await master.read_dword(addr) == test_data, "ctrl_reg_in axi reading value not OK"
 		else :
 			await master.write_dword(addr, test_data)
-			assert await master.read_dword(addr) == test_data
+			assert await master.read_dword(addr) == test_data, "register axi reading value not OK"
 			#TODO : see how to acces array port (maybe not possible with cocotb/ghdl)
 			#assert dut.REG_ARRAY_PORT[i].value == test_data, "output reg port value not OK"
+		test_data += 1
 
