@@ -56,11 +56,11 @@ accelerators_inst : for i in 0 to NB_ACCELERATORS-1 generate
     port map(
         clk					=> clk,
         rst 				=> rst,
-        start 				=> ctrl_reg_out(3*i),
-        reset 				=> ctrl_reg_out(3*i+1),
+        start 				=> ctrl_reg_out(2*i),
+        reset 				=> ctrl_reg_out(2*i+1),
         param 				=> registers(2*i),
         result  			=> registers(2*i+1),
-        status_end_process 	=> ctrl_reg_in(3*i+2),
+        status_end_process 	=> ctrl_reg_in(i),
         M_AXI_out           => M_AXI_out_array(i),
         M_AXI_in            => M_AXI_in_array(i)
     );
