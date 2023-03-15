@@ -2,7 +2,7 @@
 
 Bellow is presented the global FPGA architecture of the LoCoD project :
 
-<img src="images/global_arch.drawio.svg" width="90%"/>
+<img src="images/global_arch.drawio.svg" width="700em"/>
 
 <br>
 
@@ -27,4 +27,4 @@ Each AXI master will communicate with the SoC RAM to allow the accelerators to r
 
 Here are described the connections between registers of axi_reg component and input ports of each accelerator for n accelerators instanciated :
 
-<img src="images/registers_connections.drawio.svg" width="90%"/>
+<img src="images/registers_connections.drawio.svg" width="600em"/>
