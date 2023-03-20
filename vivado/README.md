@@ -23,4 +23,4 @@ This project will have as target the Ultra96 V2 evaluation board.
 
 Sources files are imported with soft link in the project. So, if you modify some of them in Vivado, the files are modified in the design folder.
 
-The script also uses specific source files, present in the directory `/vivado_src`, to connect the top IP of the LoCoD FPGA design to the Zynq Ultrascale SoC (these files are Xilinx IPs, for example AXI interconnects, SoC wrapper, etc...).
+The script also uses specific source files, present in the directory `vivado_src/`, to connect the top IP of the LoCoD FPGA design to the Zynq Ultrascale SoC (these files are Xilinx IPs, for example AXI interconnects, SoC wrapper, etc...).
