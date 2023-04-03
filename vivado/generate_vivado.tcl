@@ -21,6 +21,10 @@ create_project -force ${proj_name} ./${proj_name}
 add_files { ../src/axi_reg/rtl/axi_reg.vhd \
 			../src/start_stop_ctrl/rtl/start_stop_ctrl.vhd \
 			../src/master_memory_ctrl/rtl/master_memory_ctrl.v \
+			../src/axi_interconnect_colin/rtl/axi_channel_buffer.vhd \
+			../src/axi_interconnect_colin/rtl/axi_interconnect.vhd \
+			../src/axi_interconnect_colin/rtl/axi_master_interface.vhd \
+			../src/axi_interconnect_colin/rtl/axi_slave_interface.vhd \
 			../src/common/memory_ctrl_d21.vhd \
 			../src/common/axi_master_if.vhd \
 			../src/common/axi_slave_if.vhd \

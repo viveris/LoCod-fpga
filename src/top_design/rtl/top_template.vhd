@@ -14,9 +14,9 @@ port(
     S_AXI_in 			: in AXI4Lite_m_to_s;
     S_AXI_out 			: out AXI4Lite_s_to_m;
     
-    -- AXI Master Accelerator array
-    M_AXI_out_array 	: out AXI4Lite_m_to_s_array(0 to NB_ACCELERATORS-1);
-    M_AXI_in_array 		: in AXI4Lite_s_to_m_array(0 to NB_ACCELERATORS-1)
+    -- AXI Master Accelerator
+    M_AXI_out 	       	: out AXI4Lite_m_to_s;
+    M_AXI_in 		   	: in AXI4Lite_s_to_m
 );
 end top;
 
@@ -37,6 +37,9 @@ begin
 end;
 
 signal registers : reg_array(0 to (3*NB_ACCELERATORS+2)-1);
+signal M_AXI_out_array : AXI4Lite_m_to_s_array(0 to NB_ACCELERATORS-1);
+signal M_AXI_in_array : AXI4Lite_s_to_m_array(0 to NB_ACCELERATORS-1);
+
 
 begin
 
@@ -52,6 +55,19 @@ port map(
     S_AXI_out       => S_AXI_out,
     TRI_STATE       => generate_tri_state_value(NB_ACCELERATORS),
     REG_ARRAY_PORT  => registers
+);
+
+axi_interconnect_inst : entity work.axi_interconnect
+generic map(
+    NB_MASTERS          => NB_ACCELERATORS
+)
+port map(
+    clk                 => clk,
+    rst                 => rst,
+    S_AXI_in_array      => M_AXI_out_array,
+    S_AXI_out_array     => M_AXI_in_array,
+    M_AXI_out           => M_AXI_out,
+    M_AXI_in            => M_AXI_in
 );
 
 
@@ -70,4 +86,7 @@ port map(
 --);
 
 --end Behavioral;
+
+
+-- end Behavioral;
 
