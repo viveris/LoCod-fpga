@@ -1,5 +1,5 @@
 image:
-    name: docker-registry:443/embedded/locod-tb-docker
+    name: docker-registry:443/embedded/locod-tb
 
 
 test_axi_reg:
