@@ -1,0 +1,14 @@
+image:
+  name: docker-registry:443/embedded/locod-tb-docker
+
+
+test_axi_reg:
+  tags:
+    - docker
+
+  script:
+    - cd src/axi_reg/tb/
+    - make
+
+
+
