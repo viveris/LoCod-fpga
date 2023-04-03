@@ -89,33 +89,28 @@ M_AXI_RRESP <= M_AXI_in.rresp;
 M_AXI_RVALID <= M_AXI_in.rvalid;
 M_AXI_out.rready <= M_AXI_RREADY;
 
-process(clk)
-begin
-	if rising_edge(clk) then
-		for i in 0 to NB_MASTERS-1 loop
-            S_AXI_AWADDR(((i+1)*AXI_ADDR_WIDTH)-1 downto i*AXI_ADDR_WIDTH) <= S_AXI_in_array(i).awaddr;
-			S_AXI_AWPROT(((i+1)*3)-1 downto i*3) <= S_AXI_in_array(i).awprot;
-			S_AXI_AWVALID(i) <= S_AXI_in_array(i).awvalid;
-			S_AXI_out_array(i).awready <= S_AXI_AWREADY(i);
-			S_AXI_WDATA(((i+1)*AXI_DATA_WIDTH)-1 downto i*AXI_DATA_WIDTH) <= S_AXI_in_array(i).wdata;
-			S_AXI_WSTRB(((i+1)*AXI_DATA_WIDTH/8)-1 downto i*AXI_DATA_WIDTH/8) <= S_AXI_in_array(i).wstrb;
-			S_AXI_WVALID(i) <= S_AXI_in_array(i).wvalid;
-			S_AXI_out_array(i).wready <= S_AXI_WREADY(i);
-			S_AXI_out_array(i).bresp <= S_AXI_BRESP(((i+1)*2)-1 downto i*2);
-			S_AXI_out_array(i).bvalid <= S_AXI_BVALID(i);
-			S_AXI_BREADY(i) <= S_AXI_in_array(i).bready;
-			S_AXI_ARADDR(((i+1)*AXI_ADDR_WIDTH)-1 downto i*AXI_ADDR_WIDTH) <= S_AXI_in_array(i).araddr;
-			S_AXI_ARPROT(((i+1)*3)-1 downto i*3) <= S_AXI_in_array(i).arprot;
-			S_AXI_ARVALID(i) <= S_AXI_in_array(i).arvalid;
-			S_AXI_out_array(i).arready <= S_AXI_ARREADY(i);
-			S_AXI_out_array(i).rdata <= S_AXI_RDATA(((i+1)*AXI_DATA_WIDTH)-1 downto i*AXI_DATA_WIDTH);
-			S_AXI_out_array(i).rresp <= S_AXI_RRESP(((i+1)*2)-1 downto i*2);
-			S_AXI_out_array(i).rvalid <= S_AXI_RVALID(i);
-			S_AXI_RREADY(i) <= S_AXI_in_array(i).rready;
-        end loop;
-	end if;
-end process;
 
+axi_if_gen : for i in 0 to NB_MASTERS-1 generate
+	S_AXI_AWADDR(((i+1)*AXI_ADDR_WIDTH)-1 downto i*AXI_ADDR_WIDTH) <= S_AXI_in_array(i).awaddr;
+	S_AXI_AWPROT(((i+1)*3)-1 downto i*3) <= S_AXI_in_array(i).awprot;
+	S_AXI_AWVALID(i) <= S_AXI_in_array(i).awvalid;
+	S_AXI_out_array(i).awready <= S_AXI_AWREADY(i);
+	S_AXI_WDATA(((i+1)*AXI_DATA_WIDTH)-1 downto i*AXI_DATA_WIDTH) <= S_AXI_in_array(i).wdata;
+	S_AXI_WSTRB(((i+1)*AXI_DATA_WIDTH/8)-1 downto i*AXI_DATA_WIDTH/8) <= S_AXI_in_array(i).wstrb;
+	S_AXI_WVALID(i) <= S_AXI_in_array(i).wvalid;
+	S_AXI_out_array(i).wready <= S_AXI_WREADY(i);
+	S_AXI_out_array(i).bresp <= S_AXI_BRESP(((i+1)*2)-1 downto i*2);
+	S_AXI_out_array(i).bvalid <= S_AXI_BVALID(i);
+	S_AXI_BREADY(i) <= S_AXI_in_array(i).bready;
+	S_AXI_ARADDR(((i+1)*AXI_ADDR_WIDTH)-1 downto i*AXI_ADDR_WIDTH) <= S_AXI_in_array(i).araddr;
+	S_AXI_ARPROT(((i+1)*3)-1 downto i*3) <= S_AXI_in_array(i).arprot;
+	S_AXI_ARVALID(i) <= S_AXI_in_array(i).arvalid;
+	S_AXI_out_array(i).arready <= S_AXI_ARREADY(i);
+	S_AXI_out_array(i).rdata <= S_AXI_RDATA(((i+1)*AXI_DATA_WIDTH)-1 downto i*AXI_DATA_WIDTH);
+	S_AXI_out_array(i).rresp <= S_AXI_RRESP(((i+1)*2)-1 downto i*2);
+	S_AXI_out_array(i).rvalid <= S_AXI_RVALID(i);
+	S_AXI_RREADY(i) <= S_AXI_in_array(i).rready;
+end generate;
 
 
 axil_bar_inst : entity work.axilxbar
