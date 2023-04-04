@@ -1,0 +1,17 @@
+image:
+    name: docker-registry:443/embedded/locod-tb
+
+
+test_axi_reg:
+    tags:
+        - docker
+
+    script:
+        - cd src/axi_reg/tb/
+        - make
+
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - src/axi_reg/tb/waveform.ghw
+        expire_in: 1 week
