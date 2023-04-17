@@ -1,8 +1,8 @@
-
+`timescale 1ns / 1ps
 
 module axi_interconnect_ip #(
-	parameter integer AXI_DATA_WIDTH = 32,
-	parameter integer AXI_ADDR_WIDTH = 32
+	parameter AXI_DATA_WIDTH = 32,
+	parameter AXI_ADDR_WIDTH = 32
 )
 (
 	// Clock and reset
@@ -74,9 +74,16 @@ module axi_interconnect_ip #(
 );
 
 
-axil_interconnect #( .S_COUNT(2), .M_COUNT(1), .DATA_WIDTH(AXI_DATA_WIDTH), .ADDR_WIDTH(AXI_ADDR_WIDTH) ) axilxbar_inst (
+axil_interconnect #( 
+	.S_COUNT(2), 
+	.M_COUNT(1), 
+	.DATA_WIDTH(AXI_DATA_WIDTH), 
+	.ADDR_WIDTH(AXI_ADDR_WIDTH),
+	.M_ADDR_WIDTH(32'd32)
+)
+axil_interconnect_inst (
 	.clk				(clk),
-	.rst				(!rst),
+	.rst				(rst),
 
 	.s_axil_awaddr		({S01_AXI_awaddr,S00_AXI_awaddr}),
 	.s_axil_awprot		({S01_AXI_awprot,S00_AXI_awprot}),

@@ -1,7 +1,7 @@
 import cocotb
 from cocotb.triggers import RisingEdge, FallingEdge
 from cocotb.clock import Clock
-from cocotbext.axi import AxiLiteBus, AxiLiteMaster, AxiLiteSlave
+from cocotbext.axi import AxiLiteBus, AxiLiteMaster, AxiLiteRam
 
 
 # Test routine
@@ -12,18 +12,17 @@ async def test_axi_interconnect(dut):
 	rst = dut.rst
 
 	# AXI Lite Bus
-	master0 = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S00_AXI"), clk, rst, False)
-	#master1 = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S01_AXI"), clk, rst, False)
-	#slave0 = AxiLiteSlave(AxiLiteBus.from_prefix(dut, "M_AXI"), clk, rst, False)
+	master0 = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S00_AXI"), clk, rst)
+	ram0 = AxiLiteRam(AxiLiteBus.from_prefix(dut, "M_AXI"), clk, rst, size=2**32)
 
 	# Clock Generation
 	cocotb.start_soon(Clock(clk, period=10, units="ns").start())
 
 	# Reseting the DUT
-	rst.value = 0
+	rst.value = 1
 	for i in range(5):
 		await FallingEdge(clk)
-	rst.value = 1
+	rst.value = 0
 	await FallingEdge(clk)
 
 	# Testing the DUT
