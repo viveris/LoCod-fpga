@@ -12,8 +12,8 @@ First, a Slave AXI4 Lite port is used to write and read to control registers. Th
 
 Addresses of each registers are presented in the file [axi_reg.md](../src/axi_reg/doc/axi_reg.md).
 
-The first two registers bits control the state of the accelerators : start, reset and end status.
-Then, two others registers are linked to each accelerator. The fist to indicate the RAM addresse where the accelerator must retreive the input data, and the second to indicate the addresse where the accelerator must write the output data.
+The first two registers are used as control registers, with each bit controlling the state of the accelerators : start, reset and end status.
+Then, three others registers are linked to each accelerator. The fist to indicate the RAM addresse where the accelerator must retreive the input data, the second to indicate the addresse where the accelerator must write the output data, and the third to retreive the latched process duration once the accelerator has finished.
 
 <br>
 

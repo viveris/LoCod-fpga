@@ -251,7 +251,7 @@ proc create_root_design { parentCell } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.NB_ACCELERATORS {4} \
+   CONFIG.NB_ACCELERATORS {2} \
  ] $top_ip_0
 
   # Create instance: zynq_ultra_ps_e_0, and set properties

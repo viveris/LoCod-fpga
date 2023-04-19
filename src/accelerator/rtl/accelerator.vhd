@@ -9,19 +9,20 @@ generic(
 );
 port(
     -- IN
-    clk 				: in std_logic;
-    rst 				: in std_logic;
-    start 				: in std_logic;
-    reset 				: in std_logic;
-    param 				: in std_logic_vector(31 downto 0);
-    result 				: in std_logic_vector(31 downto 0);
+    clk 				    : in std_logic;
+    rst 				    : in std_logic;
+    start 				    : in std_logic;
+    reset 				    : in std_logic;
+    param 				    : in std_logic_vector(31 downto 0);
+    result 				    : in std_logic_vector(31 downto 0);
     
     -- OUT
-    status_end_process 	: out std_logic;
+    status_end_process 	    : out std_logic;
+    duration_count_latched  : out std_logic_vector(31 downto 0);
     
     -- AXI4 LITE Bus
-	M_AXI_out       	: out AXI4Lite_m_to_s;
-    M_AXI_in        	: in AXI4Lite_s_to_m
+	M_AXI_out       	    : out AXI4Lite_m_to_s;
+    M_AXI_in        	    : in AXI4Lite_s_to_m
 );
 end accelerator;
 
@@ -41,27 +42,6 @@ signal data_rdy : std_logic;
 
 constant C_INIT_AXI_TXN : std_logic := '0';
 constant C_SIN_DATA_RAM_SIZE : std_logic_vector(5 downto 0) := "000000";
-
--- TODO : Change master_memory_ctrl ports and then remove these signals
-signal M_AXI_awaddr : std_logic_vector(31 downto 0);
-signal M_AXI_awprot : std_logic_vector(2 downto 0);
-signal M_AXI_awvalid : std_logic;
-signal M_AXI_awready : std_logic;
-signal M_AXI_wdata : std_logic_vector(31 downto 0);
-signal M_AXI_wstrb : std_logic_vector(3 downto 0);
-signal M_AXI_wvalid : std_logic;
-signal M_AXI_wready : std_logic;
-signal M_AXI_bresp : std_logic_vector(1 downto 0);
-signal M_AXI_bvalid : std_logic;
-signal M_AXI_bready : std_logic;
-signal M_AXI_araddr : std_logic_vector(31 downto 0);
-signal M_AXI_arprot : std_logic_vector(2 downto 0);
-signal M_AXI_arvalid : std_logic;
-signal M_AXI_arready : std_logic;
-signal M_AXI_rdata : std_logic_vector(31 downto 0);
-signal M_AXI_rresp : std_logic_vector(1 downto 0);
-signal M_AXI_rvalid : std_logic;
-signal M_AXI_rready : std_logic;
 
 
 component acc_0 is 
@@ -211,26 +191,6 @@ end component;
 
 begin
 
-M_AXI_out.awaddr 	<= M_AXI_awaddr;
-M_AXI_out.awprot 	<= M_AXI_awprot;
-M_AXI_out.awvalid 	<= M_AXI_awvalid;     
-M_AXI_out.wdata 	<= M_AXI_wdata;
-M_AXI_out.wstrb 	<= M_AXI_wstrb;
-M_AXI_out.wvalid 	<= M_AXI_wvalid;       
-M_AXI_out.bready 	<= M_AXI_bready;          
-M_AXI_out.araddr 	<= M_AXI_araddr;
-M_AXI_out.arprot 	<= M_AXI_arprot;
-M_AXI_out.arvalid 	<= M_AXI_arvalid;
-M_AXI_out.rready 	<= M_AXI_rready;
-M_AXI_awready 		<= M_AXI_in.awready;
-M_AXI_wready 		<= M_AXI_in.wready;      
-M_AXI_bresp 		<= M_AXI_in.bresp;
-M_AXI_bvalid 		<= M_AXI_in.bvalid;       
-M_AXI_arready 		<= M_AXI_in.arready;        
-M_AXI_rdata 		<= M_AXI_in.rdata;
-M_AXI_rresp 		<= M_AXI_in.rresp;
-M_AXI_rvalid 		<= M_AXI_in.rvalid;
-
 
 start_stop_ctrl_inst : entity work.start_stop_ctrl
 port map (
@@ -242,7 +202,7 @@ port map (
     status_running              => open,
     status_end_process          => status_end_process,
     duration_count              => open,
-    duration_count_latched      => open,
+    duration_count_latched      => duration_count_latched,
     iteration_count             => open,
     ip_start                    => ip_start,
     ip_reset                    => ip_reset,
@@ -264,25 +224,25 @@ port map (
     SOUT_RDATA_RAM => r_data_ram,
     ERROR => open,
     TXN_DONE => open,   
-    M_AXI_AWADDR => M_AXI_awaddr,
-    M_AXI_AWPROT => M_AXI_awprot,
-    M_AXI_AWVALID => M_AXI_awvalid,
-    M_AXI_AWREADY => M_AXI_awready,    
-    M_AXI_WDATA => M_AXI_wdata,
-    M_AXI_WSTRB => M_AXI_wstrb,
-    M_AXI_WVALID => M_AXI_wvalid,
-    M_AXI_WREADY => M_AXI_wready,   
-    M_AXI_BRESP => M_AXI_bresp,
-    M_AXI_BVALID => M_AXI_bvalid,
-    M_AXI_BREADY => M_AXI_bready,   
-    M_AXI_ARADDR => M_AXI_araddr,
-    M_AXI_ARPROT => M_AXI_arprot,
-    M_AXI_ARVALID => M_AXI_arvalid,
-    M_AXI_ARREADY => M_AXI_arready, 
-    M_AXI_RDATA => M_AXI_rdata,
-    M_AXI_RRESP => M_AXI_rresp,
-    M_AXI_RVALID => M_AXI_rvalid,
-    M_AXI_RREADY => M_AXI_rready
+    M_AXI_AWADDR => M_AXI_out.awaddr,
+    M_AXI_AWPROT => M_AXI_out.awprot,
+    M_AXI_AWVALID => M_AXI_out.awvalid,
+    M_AXI_AWREADY => M_AXI_in.awready,    
+    M_AXI_WDATA => M_AXI_out.wdata,
+    M_AXI_WSTRB => M_AXI_out.wstrb,
+    M_AXI_WVALID => M_AXI_out.wvalid,
+    M_AXI_WREADY => M_AXI_in.wready,   
+    M_AXI_BRESP => M_AXI_in.bresp,
+    M_AXI_BVALID => M_AXI_in.bvalid,
+    M_AXI_BREADY => M_AXI_out.bready,   
+    M_AXI_ARADDR => M_AXI_out.araddr,
+    M_AXI_ARPROT => M_AXI_out.arprot,
+    M_AXI_ARVALID => M_AXI_out.arvalid,
+    M_AXI_ARREADY => M_AXI_in.arready, 
+    M_AXI_RDATA => M_AXI_in.rdata,
+    M_AXI_RRESP => M_AXI_in.rresp,
+    M_AXI_RVALID => M_AXI_in.rvalid,
+    M_AXI_RREADY => M_AXI_out.rready
 );
 
 
