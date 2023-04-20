@@ -6,9 +6,9 @@
 
 This IP provides registers accessible through an AXI4 Lite interface.
 
-These registers are designed to be interfaced with the differents accelerator blocs of the Locod design. To control them (start, reset and watch end state), the first 2 registers are used : the first is the control out register and the second the control in register.
+These registers are designed to be interfaced with the differents accelerator blocs of the Locod design to control them : start, reset, input address and output address.
 
-Each register is the same size than the AXI data bus. The addresses are coded over integers. Therefore, the first register is at the address 0, the second at the address 4, etc...
+A tri-state input with a size equal to the number of registers allows to select the direction of the registers. Each register is the same size than the AXI data bus. The addresses are coded over integers. Therefore, the first register is at the address 0, the second at the address 4, etc...
 
 <br>
 
@@ -30,7 +30,7 @@ The Locod package ([locod_package.vhd](../../common/locod_package.vhd)) is neede
 
 | Generic name | Type | Default | Description |
 |---|---|---|---|
-| NB_REGISTERS | integer | none | The number of registers that we want, in addition to the 2 control registers |
+| NB_REGISTERS | integer | none | The number of registers that we want |
 
 
 | Port name | I/O | Type | Description |
@@ -39,9 +39,8 @@ The Locod package ([locod_package.vhd](../../common/locod_package.vhd)) is neede
 | rst | I | std_logic | Reset signal, must be connected to AXI reset |
 | S_AXI_in | I | AXI4Lite_m_to_s | Master to slave signals of AXI4 Lite bus |
 | S_AXI_out | O | AXI4Lite_s_to_m | Slave to master signals of AXI4 Lite bus |
-| CTRL_REG_OUT | O | std_logic_vector | Control register out, size of AXI data bus |
-| CTRL_REG_IN | I | std_logic_vector | Control register in, size of AXI data bus |
-| REG_ARRAY_PORT | O | reg_array | Array of NB_REGISTERS registers |
+| TRI_STATE | I | std_logic_vector | Tri-state value, each bit specifying the direction of the corresponding register : 0 for output or 1 for input |
+| REG_ARRAY_PORT | I/O | reg_array | Array of NB_REGISTERS registers, direction depending on the TRI_STATE port value |
 
 <br>
 
@@ -51,8 +50,6 @@ Here are the addresses to acces registers of axi_reg component :
 
 | Register | Address | Acces |
 |---|---|---|
-| CTRL_REG_OUT | 0 | R/W |
-| CTRL_REG_IN | 4 | R |
-| REG_ARRAY_PORT[0] | 8 | R/W |
+| REG_ARRAY_PORT[0] | 0 | R/W if output, R if input |
 | ... | ... | ... |
-| REG_ARRAY_PORT[NB_REGISTERS-1] | 8 + 4 * (NB_REGISTERS - 1) | R/W |
+| REG_ARRAY_PORT[NB_REGISTERS-1] | 4 * (NB_REGISTERS - 1) | R/W if output, R if input |

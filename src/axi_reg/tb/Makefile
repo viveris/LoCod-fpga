@@ -17,10 +17,6 @@ VHDL_SOURCES += $(PWD)/../rtl/axi_reg_ip.vhd
 VHDL_SOURCES += $(PWD)/../../common/locod_package.vhd
 VHDL_SOURCES += $(PWD)/../../common/axi_slave_if.vhd
 
-# Generic parameters
-NB_REGISTERS ?= 8
-SIM_ARGS += -gNB_REGISTERS=$(NB_REGISTERS)
-
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 TOPLEVEL = axi_reg_ip
 

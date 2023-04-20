@@ -19,17 +19,18 @@ port (
     S_AXI_in        : in AXI4Lite_m_to_s;
     S_AXI_out       : out AXI4Lite_s_to_m;
 
-    -- Output registers
-    CTRL_REG_OUT    : out std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-    CTRL_REG_IN     : in std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-    REG_ARRAY_PORT  : out reg_array(0 to NB_REGISTERS-1)
+    -- Tri State input
+    TRI_STATE		: in std_logic_vector(NB_REGISTERS-1 downto 0);
+
+    -- Registers
+    REG_ARRAY_PORT  : inout reg_array(0 to NB_REGISTERS-1)
 );
 end axi_reg;
 
 architecture Behavioral of axi_reg is
 
 -- Constants
-constant AXI_REG_ADDR_WIDTH : integer := integer(ceil(log2(real((NB_REGISTERS+2)*4)))); --Address range that we use over bytes
+constant AXI_REG_ADDR_WIDTH : integer := integer(ceil(log2(real((NB_REGISTERS)*4)))); --Address range that we use over bytes
 
 -- AXI4 LITE signals
 signal axi_awaddr   : std_logic_vector(AXI_REG_ADDR_WIDTH-1 downto 0);
@@ -48,9 +49,8 @@ signal axi_awaddr_valid : integer;
 signal axi_araddr_valid : integer;
 
 -- Registers
-signal ctrl_reg_out_s : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal ctrl_reg_in_s : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal registers : reg_array(0 to NB_REGISTERS-1);
+signal registers_in : reg_array(0 to NB_REGISTERS-1); --DFF that stores value from registers inputs
+signal registers_out : reg_array(0 to NB_REGISTERS-1); --DFF that stores value from AXI writes
 
 -- Others
 signal slv_reg_rden : std_logic;
@@ -72,12 +72,23 @@ S_AXI_out.rvalid    <= axi_rvalid;
 axi_awaddr_valid <= to_integer(shift_right(unsigned(axi_awaddr), 2));
 axi_araddr_valid <= to_integer(shift_right(unsigned(axi_araddr), 2));
 
-CTRL_REG_OUT <= ctrl_reg_out_s;
-ctrl_reg_in_s <= CTRL_REG_IN;
-REG_ARRAY_PORT <= registers;
-
 
 -- ======================================= Processes ========================================
+-- Implement behavioral representation of tri-states buffers
+process (TRI_STATE, REG_ARRAY_PORT, registers_out)
+begin
+    for i in 0 to NB_REGISTERS-1 loop
+        if (TRI_STATE(i) = '1') then    --Input port
+            REG_ARRAY_PORT(i) <= (others => 'Z');
+            registers_in(i) <= REG_ARRAY_PORT(i);
+        else
+            REG_ARRAY_PORT(i) <= registers_out(i);
+            registers_in(i) <= REG_ARRAY_PORT(i);
+        end if;
+    end loop;
+end process;
+
+
 -- Implement axi_awready generation
 -- axi_awready is asserted for one clk clock cycle when both
 -- S_AXI_awvalid and S_AXI_wvalid are asserted. axi_awready is
@@ -156,15 +167,10 @@ process (clk)
 begin
 	if rising_edge(clk) then 
 		if rst = '0' then
-		    ctrl_reg_out_s <= (others => '0');
-			registers <= (others => (others => '0'));
+		    registers_out <= (others => (others => '0'));
 		else
 		    if (slv_reg_wren = '1') then
-                if (axi_awaddr_valid = 0) then
-                    ctrl_reg_out_s <= S_AXI_in.wdata;
-                elsif ((axi_awaddr_valid >= 2) and (axi_awaddr_valid <= NB_REGISTERS + 1)) then    
-                    registers(axi_awaddr_valid-2) <= S_AXI_in.wdata;
-                end if;
+                registers_out(axi_awaddr_valid) <= S_AXI_in.wdata;
             end if;
 		end if;
 	end if;                   
@@ -269,13 +275,7 @@ begin
 		    	-- acceptance of read address by the slave (axi_arready), 
 		    	-- output the read dada 
 		    	-- Read address mux
-		    	if (axi_araddr_valid = 0) then
-		      	    axi_rdata <= ctrl_reg_out_s;
-		      	elsif (axi_araddr_valid = 1) then
-		      	    axi_rdata <= ctrl_reg_in_s;
-                elsif ((axi_araddr_valid >= 2) and (axi_araddr_valid <= NB_REGISTERS + 1)) then    
-                    axi_rdata <= registers(axi_araddr_valid-2);       -- register read data
-                end if;
+                axi_rdata <= registers_in(axi_araddr_valid);
 		  	end if;   
 		end if;
 	end if;

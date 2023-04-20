@@ -1,8 +1,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use ieee.numeric_std.all;
 
 use work.locod_pkg.all;
-
 
 entity top is
 generic(
@@ -25,25 +25,35 @@ end top;
 
 architecture Behavioral of top is
 
-signal ctrl_reg_out : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal ctrl_reg_in : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-signal registers : reg_array(0 to (2*NB_ACCELERATORS)-1);
+function generate_tri_state_value(NB_ACC: integer)
+return std_logic_vector
+is
+    variable result : std_logic_vector((3*NB_ACC+2)-1 downto 0);
+    variable control_tri_state : std_logic_vector(2-1 downto 0) := "10";
+    variable acc_tri_state : std_logic_vector(3-1 downto 0) := "100";
+begin
+    result(1 downto 0) := control_tri_state;
+    for i in 1 to NB_ACC loop
+        result(2+i*3-1 downto 2+(i-1)*3) := acc_tri_state;
+    end loop;
+    return result;
+end;
 
+signal registers : reg_array(0 to (3*NB_ACCELERATORS+2)-1);
 
 begin
 
 
 axi_reg_inst : entity work.axi_reg
 generic map(
-    NB_REGISTERS    => 2*NB_ACCELERATORS
+    NB_REGISTERS    => 3*NB_ACCELERATORS+2
 )
 port map(
 	clk 		    => clk,
 	rst 	        => rst,
     S_AXI_in        => S_AXI_in,
     S_AXI_out       => S_AXI_out,
-    CTRL_REG_OUT    => ctrl_reg_out,
-    CTRL_REG_IN     => ctrl_reg_in,
+    TRI_STATE       => generate_tri_state_value(NB_ACCELERATORS),
     REG_ARRAY_PORT  => registers
 );
 
@@ -51,18 +61,19 @@ port map(
 accelerators_inst : for i in 0 to NB_ACCELERATORS-1 generate
     accelerator_inst : entity work.accelerator
     generic map(
-        acc_num             => i
+        acc_num                 => i
     )
     port map(
-        clk					=> clk,
-        rst 				=> rst,
-        start 				=> ctrl_reg_out(2*i),
-        reset 				=> ctrl_reg_out(2*i+1),
-        param 				=> registers(2*i),
-        result  			=> registers(2*i+1),
-        status_end_process 	=> ctrl_reg_in(i),
-        M_AXI_out           => M_AXI_out_array(i),
-        M_AXI_in            => M_AXI_in_array(i)
+        clk					    => clk,
+        rst 				    => rst,
+        start 				    => registers(0)(2*i),
+        reset 				    => registers(0)(2*i+1),
+        param 				    => registers(3*i+2),
+        result  			    => registers(3*i+2+1),
+        status_end_process 	    => registers(1)(i),
+        duration_count_latched  => registers(3*i+2+2),
+        M_AXI_out               => M_AXI_out_array(i),
+        M_AXI_in                => M_AXI_in_array(i)
     );
 end generate;
 

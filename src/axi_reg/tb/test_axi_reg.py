@@ -1,52 +1,63 @@
+import random
 import cocotb
 from cocotb.triggers import RisingEdge, FallingEdge
 from cocotb.clock import Clock
 from cocotbext.axi import AxiLiteBus, AxiLiteMaster
-from pprint import pprint
 
-# Retrieve generics parameters
-if cocotb.simulator.is_running():
-	NB_REGISTERS = int(cocotb.top.NB_REGISTERS)
+
+class TB:
+	def __init__(self, dut):
+		self.dut = dut
+
+		#Retrieve generics parameters
+		self.NB_REGISTERS = int(cocotb.top.NB_REGISTERS)
+
+		#DUT ports
+		self.ports = [dut.REG0, dut.REG1, dut.REG2, dut.REG3, dut.REG4, dut.REG5, dut.REG6, dut.REG7, dut.REG8, dut.REG9, dut.REG10, dut.REG11, dut.REG12, dut.REG13, dut.REG14, dut.REG15]
+
+		#AXI Lite Bus
+		self.axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.clk, dut.rst, False)
+
+		#Start clock
+		cocotb.start_soon(Clock(dut.clk, period=10, units="ns").start())
+
+
+	async def cycle_reset(self):
+		for i in range(self.NB_REGISTERS):
+			if (i%2 == 0):
+				self.ports[i].value = 0
+
+		self.dut.rst.value = 0
+		for i in range(5):
+			await FallingEdge(self.dut.clk)
+		self.dut.rst.value = 1
+		await FallingEdge(self.dut.clk)
+
+
+	async def test_port(self, port, reg_addr, direction):
+		data = random.randrange(0, 0xffffffff)
+		other_addr = random.randrange(0, 4 * self.NB_REGISTERS, 4)
+		while other_addr == reg_addr:
+			other_addr = random.randrange(0, 4 * self.NB_REGISTERS, 4)
+		if direction == 0:			#Output port
+			await self.axi_master.write_dword(reg_addr, data)
+			assert await self.axi_master.read_dword(reg_addr) == data, "output port axi reading value not OK"
+			assert port.value == data, "output port value not OK"
+			assert await self.axi_master.read_dword(other_addr) != data, "axi reading at another address is the same"
+		elif direction == 1:		#Input port
+			port.value = data
+			assert await self.axi_master.read_dword(reg_addr) == data, "register in axi reading value not OK"
+
 
 
 # Test routine
 @cocotb.test()
-async def test_axi_reg(dut):
-	# DUT ports
-	clk = dut.clk
-	rst = dut.rst
-	ctrl_reg_out = dut.CTRL_REG_OUT
-	ctrl_reg_in = dut.CTRL_REG_IN
-	output_ports = [dut.REG0, dut.REG1, dut.REG2, dut.REG3, dut.REG4, dut.REG5, dut.REG6, dut.REG7, dut.REG8, dut.REG9, dut.REG10, dut.REG11, dut.REG12, dut.REG13, dut.REG14, dut.REG15]
+async def test_axi_reg(dut):	
+	tb = TB(dut)
 
-	# AXI Lite Bus
-	bus = AxiLiteBus.from_prefix(dut, "S_AXI")
-	master = AxiLiteMaster(bus, clk, rst, False)
+	#Reseting DUT
+	await tb.cycle_reset()
 
-	# Clock Generation
-	cocotb.start_soon(Clock(clk, period=10, units="ns").start())
-
-	# Reseting the DUT
-	rst.value = 0
-	for _ in range(5):
-		await FallingEdge(clk)
-	rst.value = 1
-	await FallingEdge(clk)
-
-	# Testing the DUT
-	test_data = 123
-
-	for i in range(NB_REGISTERS+2):
-		addr = 4*i
-		if addr == 0 :
-			await master.write_dword(addr, test_data)
-			assert await master.read_dword(addr) == test_data, "ctrl_reg_out axi reading value not OK"
-			assert ctrl_reg_out.value == test_data, "ctrl_reg_out port value not OK"
-		elif addr == 4 :
-			ctrl_reg_in.value = test_data
-			assert await master.read_dword(addr) == test_data, "ctrl_reg_in axi reading value not OK"
-		else :
-			await master.write_dword(addr, test_data)
-			assert await master.read_dword(addr) == test_data, "register axi reading value not OK"
-			assert output_ports[i-2].value == test_data, "output reg port value not OK"
-		test_data += 1
+	#Testing registers
+	for i in range(tb.NB_REGISTERS):
+		await tb.test_port(tb.ports[i], i*4, (i+1)%2)
