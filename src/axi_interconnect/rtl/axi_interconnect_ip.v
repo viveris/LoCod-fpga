@@ -8,6 +8,7 @@ module axi_interconnect_ip #(
 	// Clock and reset
 	input			clk,
 	input			rst,
+	input			rst_n,
 
 	// AXI Slave in 0
 	input [AXI_ADDR_WIDTH-1:0]		S00_AXI_awaddr,  
@@ -79,6 +80,7 @@ axil_interconnect #(
 	.M_COUNT(1), 
 	.DATA_WIDTH(AXI_DATA_WIDTH), 
 	.ADDR_WIDTH(AXI_ADDR_WIDTH),
+	.M_BASE_ADDR(32'd0),
 	.M_ADDR_WIDTH(32'd32)
 )
 axil_interconnect_inst (
