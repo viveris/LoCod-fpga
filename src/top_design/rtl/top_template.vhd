@@ -59,15 +59,17 @@ port map(
 
 axi_interconnect_inst : entity work.axi_interconnect
 generic map(
-    NB_MASTERS          => NB_ACCELERATORS
+    NB_MASTER           => NB_ACCELERATORS,
+    ADDR_SIZE           => AXI_ADDR_WIDTH,
+    DATA_SIZE           => AXI_DATA_WIDTH
 )
 port map(
-    clk                 => clk,
-    rst                 => rst,
-    S_AXI_in_array      => M_AXI_out_array,
-    S_AXI_out_array     => M_AXI_in_array,
-    M_AXI_out           => M_AXI_out,
-    M_AXI_in            => M_AXI_in
+    i_clk               => clk,
+    i_rst_n             => rst,
+    i_s_axi_array       => M_AXI_out_array,
+    o_s_axi_array       => M_AXI_in_array,
+    o_m_axi             => M_AXI_out,
+    i_m_axi             => M_AXI_in
 );
 
 
@@ -86,7 +88,4 @@ port map(
 --);
 
 --end Behavioral;
-
-
--- end Behavioral;
 
