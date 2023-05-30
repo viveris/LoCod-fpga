@@ -5,9 +5,6 @@ use work.locod_pkg.all;
 
 
 entity top_ip is
-generic (
-    NB_ACCELERATORS :integer
-);
 port(
 	-- Clock and reset
     clk : in std_logic;
@@ -209,9 +206,6 @@ signal M_AXI_in_array : AXI4Lite_s_to_m_array(0 to 7);
 begin
 
 top_inst : entity work.top
-generic map(
-    NB_ACCELERATORS     => NB_ACCELERATORS
-)
 port map(
     clk 				=> clk,
     rst 				=> rst,

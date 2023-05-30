@@ -745,9 +745,6 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset system_reset
 
 # Create instance: top_ip, and set properties
 create_bd_cell -type module -reference top_ip top_ip
-set_property -dict [ list \
-	CONFIG.NB_ACCELERATORS ${nb_accel} \
-] [get_bd_cells top_ip]
 
 
 # Create interface connections

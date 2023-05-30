@@ -5,9 +5,6 @@ use ieee.numeric_std.all;
 use work.locod_pkg.all;
 
 entity top is
-generic(
-    NB_ACCELERATORS     : integer
-);
 port(
 	-- Clock and reset
     clk 				: in std_logic;
@@ -58,24 +55,19 @@ port map(
 );
 
 
-accelerators_inst : for i in 0 to NB_ACCELERATORS-1 generate
-    accelerator_inst : entity work.accelerator
-    generic map(
-        acc_num                 => i
-    )
-    port map(
-        clk					    => clk,
-        rst 				    => rst,
-        start 				    => registers(0)(2*i),
-        reset 				    => registers(0)(2*i+1),
-        param 				    => registers(3*i+2),
-        result  			    => registers(3*i+2+1),
-        status_end_process 	    => registers(1)(i),
-        duration_count_latched  => registers(3*i+2+2),
-        M_AXI_out               => M_AXI_out_array(i),
-        M_AXI_in                => M_AXI_in_array(i)
-    );
-end generate;
+--accelerator_inst : entity work.accelerator_i
+--port map(
+--	clk					    => clk,
+--	rst 				    => rst,
+--	start 				    => registers(0)(2*i),
+--	reset 				    => registers(0)(2*i+1),
+--	param 				    => registers(3*i+2),
+--	result  			    => registers(3*i+2+1),
+--	status_end_process 	    => registers(1)(i),
+--	duration_count_latched  => registers(3*i+2+2),
+--	M_AXI_out               => M_AXI_out_array(i),
+--	M_AXI_in                => M_AXI_in_array(i)
+--);
 
-end Behavioral;
+--end Behavioral;
 

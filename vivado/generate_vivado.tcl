@@ -2,42 +2,33 @@
 # ultra96
 # enclustra
 
-# Number of accelerators possible : [1-8]
+set target [lindex $argv 0]
 
 if {![info exists target]} {
 	puts "target varible not defined"
+	exit 1
 }
-if {![info exists nb_accel]} {
-	puts "nb_accel variable not defined"
-}
-
 
 # Set the default project name
 set proj_name locod-vivado_${target}
 
 
 #Creating Vivado project
-create_project ${proj_name} ./${proj_name}
+create_project -force ${proj_name} ./${proj_name}
 
 
 # Importing common source files
-add_files { ../src/accelerator/rtl/accelerator.vhd \
-			../src/axi_reg/rtl/axi_reg.vhd \
+add_files { ../src/axi_reg/rtl/axi_reg.vhd \
 			../src/start_stop_ctrl/rtl/start_stop_ctrl.vhd \
 			../src/master_memory_ctrl/rtl/master_memory_ctrl.v \
-			../src/top_design/rtl/top.vhd \
-			../src/top_design/rtl/top_ip.vhd \
 			../src/common/memory_ctrl_d21.vhd \
 			../src/common/axi_master_if.vhd \
 			../src/common/axi_slave_if.vhd \
 			../src/common/locod_package.vhd }		
 
 
-# Importing accelerators source files
-# TODO: replace 8 by $nb_accel and find a solution to addapt accelerator.vhd depending on that
-for {set i 0} {$i < 8} {incr i} {
-	add_files ../src/generated_files/acc_${i}.vhd
-}
+# Importing generated files
+add_files ../src/generated_files
 
 
 # Target specific operations
@@ -53,3 +44,22 @@ switch $target {
 		break
 	}
 }
+
+
+# Launch Synthesis
+launch_runs synth_1
+wait_on_run synth_1
+
+
+# Launch Implementation
+launch_runs impl_1
+wait_on_run impl_1
+
+
+# Writing bitstream
+open_run impl_1
+write_bitstream fpga.bit
+
+
+# End
+exit 0
