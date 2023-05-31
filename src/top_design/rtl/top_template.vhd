@@ -57,7 +57,7 @@ port map(
     REG_ARRAY_PORT  => registers
 );
 
-axi_interconnect_inst : entity work.axi_interconnect
+axi_interconnect_inst : entity work.axi_interconnect_c
 generic map(
     NB_MASTER           => NB_ACCELERATORS,
     ADDR_SIZE           => AXI_ADDR_WIDTH,

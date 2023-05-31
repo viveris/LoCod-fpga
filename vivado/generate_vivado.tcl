@@ -62,7 +62,7 @@ wait_on_run impl_1
 
 # Writing bitstream
 open_run impl_1
-write_bitstream fpga.bit
+write_bitstream -force fpga.bit
 
 
 # End
