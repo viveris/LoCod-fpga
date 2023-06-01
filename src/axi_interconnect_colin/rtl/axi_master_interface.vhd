@@ -41,15 +41,9 @@ end axi_master_interface;
 
 architecture Behavioral of axi_master_interface is
 
-type t_read_state is (idle, ar, r);
-signal sm_read_state                  : t_read_state := idle;
-type t_write_state is (idle, aw, aw_wait, w, b);
-signal sm_write_state                 : t_write_state := idle;
 type t_state is (idle, ar, r, aw, aw_wait, w, b);
 signal sm_state                       : t_state := idle;
-signal s_read_master_index            : integer range 0 to NB_MASTER-1 := 1;
-signal s_write_master_index           : integer range 0 to NB_MASTER-1 := 1;
-signal s_master_index                 : integer range 0 to NB_MASTER-1 := 1;
+signal s_master_index                 : integer range 0 to NB_MASTER-1 := 0;
 signal s_araddr                       : std_logic_vector(ADDR_SIZE-1 downto 0) := (others=>'0');
 signal s_arprot                       : std_logic_vector(PROT_SIZE-1 downto 0) := (others=>'0');
 signal s_awaddr                       : std_logic_vector(ADDR_SIZE-1 downto 0) := (others=>'0');
