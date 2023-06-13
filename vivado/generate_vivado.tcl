@@ -51,12 +51,12 @@ switch $target {
 
 
 # Launch Synthesis
-launch_runs synth_1
+launch_runs -jobs 16 synth_1
 wait_on_run synth_1
 
 
 # Launch Implementation
-launch_runs impl_1
+launch_runs -jobs 16 impl_1
 wait_on_run impl_1
 
 
