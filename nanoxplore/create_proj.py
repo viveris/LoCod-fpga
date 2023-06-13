@@ -1,4 +1,5 @@
 import sys
+import os
 import traceback
 from nxpython import *
 
@@ -11,45 +12,27 @@ project.setVariantName("NG-ULTRA", "FF-1760")
 
 
 #================== Importing files =======================
-#Top
-project.addFile("work", "../../src/top_design/rtl/top_ip.vhd")
-project.addFile("work", "../../src/top_design/rtl/top.vhd")
+# Importing common source files
+project.addFiles("work", [	"../../src/axi_reg/rtl/axi_reg.vhd", 
+							"../../src/start_stop_ctrl/rtl/start_stop_ctrl.vhd",
+							"../../src/master_memory_ctrl/rtl/master_memory_ctrl.v",
+							"../../src/axi_interconnect_colin/rtl/axi_channel_buffer.vhd",
+							"../../src/axi_interconnect_colin/rtl/axi_interconnect.vhd",
+							"../../src/axi_interconnect_colin/rtl/axi_master_interface.vhd",
+							"../../src/axi_interconnect_colin/rtl/axi_slave_interface.vhd",
+							"../../src/common/memory_ctrl_d21.vhd",
+							"../../src/common/axi_master_if.vhd",
+							"../../src/common/axi_slave_if.vhd",
+							"../../src/common/locod_package.vhd"])
 
-#Common
-project.addFile("work", "../../src/common/locod_package.vhd")
-project.addFile("work", "../../src/common/memory_ctrl_d21.vhd")
-project.addFile("work", "../../src/common/axi_master_if.vhd")
-project.addFile("work", "../../src/common/axi_slave_if.vhd")
-
-#AXI Reg
-project.addFile("work", "../../src/axi_reg/rtl/axi_reg.vhd")
-
-#Accelerator
-project.addFile("work", "../../src/accelerator/rtl/accelerator.vhd")
-
-#Master memory controller
-project.addFile("work", "../../src/master_memory_ctrl/rtl/master_memory_ctrl.v")
-
-#Start stop controller
-project.addFile("work", "../../src/start_stop_ctrl/rtl/start_stop_ctrl.vhd")
-
-#Generated files
-project.addFile("work", "../../src/generated_files/acc_0.vhd")
-project.addFile("work", "../../src/generated_files/acc_1.vhd")
-project.addFile("work", "../../src/generated_files/acc_2.vhd")
-project.addFile("work", "../../src/generated_files/acc_3.vhd")
-project.addFile("work", "../../src/generated_files/acc_4.vhd")
-project.addFile("work", "../../src/generated_files/acc_5.vhd")
-project.addFile("work", "../../src/generated_files/acc_6.vhd")
-project.addFile("work", "../../src/generated_files/acc_7.vhd")
+# Importing generated files
+generated_files = os.listdir("../../src/generated_files")
+generated_files.remove(".gitignore")
+project.addFiles("work", ["../../src/generated_files/"+i for i in generated_files])
 
 
 #==================== Top cell name ======================
-project.setTopCellName("work", "top_ip")
-
-
-#===================Generics parameters ==================
-project.addParameter("NB_ACCELERATORS", "1")
+project.setTopCellName("work", "top")
 
 
 #==================== Project options ====================
