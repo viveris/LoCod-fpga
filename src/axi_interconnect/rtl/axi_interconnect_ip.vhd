@@ -104,7 +104,7 @@ architecture Behavioral of axi_interconnect_ip is
 
 begin
 
-    axi_interconnect_inst: entity work.axi_interconnect_c
+    axi_interconnect_inst: entity work.axi_interconnect
         Generic Map (
             NB_MASTER                      => NB_MASTER,
             ADDR_SIZE                      => ADDR_SIZE,

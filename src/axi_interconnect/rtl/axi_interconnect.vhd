@@ -20,7 +20,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 use work.locod_pkg.all;
 
-entity axi_interconnect_c is
+entity axi_interconnect is
     Generic (
         NB_MASTER                      : integer := 2;
         ADDR_SIZE                      : integer := 32;
@@ -39,9 +39,9 @@ entity axi_interconnect_c is
         o_m_axi                        : out AXI4Lite_m_to_s;
         i_m_axi                        : in  AXI4Lite_s_to_m
     );
-end axi_interconnect_c;
+end axi_interconnect;
 
-architecture Behavioral of axi_interconnect_c is
+architecture Behavioral of axi_interconnect is
 
 signal s_internal_interface_n_to_1     : AXI4Lite_m_to_s_array(0 to NB_MASTER-1);
 signal s_internal_interface_1_to_n     : AXI4Lite_s_to_m_array(0 to NB_MASTER-1);

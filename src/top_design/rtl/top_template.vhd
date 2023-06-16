@@ -149,7 +149,7 @@ port map (
     M_AXI_in        => M_AXI_in
 );
 
-axi_interconnect_inst : entity work.axi_interconnect_c
+axi_interconnect_inst : entity work.axi_interconnect
 generic map(
     NB_MASTER           => NB_ACCELERATORS,
     ADDR_SIZE           => AXI_ADDR_WIDTH,

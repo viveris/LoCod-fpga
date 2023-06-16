@@ -724,46 +724,29 @@ set_property -dict [ list \
 ] [get_bd_cells zynq_ultra_ps_e]
 
 
-# Create instance: axi_interconnect_0, and set properties
-create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_0
-set_property -dict [ list \
-	CONFIG.NUM_MI {1} \
-] [get_bd_cells axi_interconnect_0]
-
-
-# Create instance: axi_interconnect_1, and set properties
-create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_1
-set_property -dict [ list \
-	CONFIG.NUM_MI {1} \
-	CONFIG.NUM_SI {1} \
-] [get_bd_cells axi_interconnect_1]
-
-
 # Create instance: system_reset, and set properties
 create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset system_reset
 
 
-# Create instance: top, and set properties
-create_bd_cell -type module -reference top top
+# Create instance: top_axi_full, and set properties
+create_bd_cell -type module -reference top_axi_full top_axi_full
 
 
 # Create interface connections
-connect_bd_intf_net [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/M_AXI_HPM0_FPD]
-connect_bd_intf_net [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins top/S_AXI]
-connect_bd_intf_net [get_bd_intf_pins axi_interconnect_1/S00_AXI] [get_bd_intf_pins top/M_AXI]
-connect_bd_intf_net [get_bd_intf_pins axi_interconnect_1/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HPC0_FPD]
+connect_bd_intf_net [get_bd_intf_pins zynq_ultra_ps_e/M_AXI_HPM0_FPD] [get_bd_intf_pins top_axi_full/S_AXI]
+connect_bd_intf_net [get_bd_intf_pins top_axi_full/M_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HPC0_FPD]
 
 
 # Create port connections
-connect_bd_net [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_1/ARESETN] [get_bd_pins axi_interconnect_1/M00_ARESETN] [get_bd_pins axi_interconnect_1/S00_ARESETN] [get_bd_pins system_reset/peripheral_aresetn] [get_bd_pins top/rst]
-connect_bd_net [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_1/ACLK] [get_bd_pins axi_interconnect_1/M00_ACLK] [get_bd_pins axi_interconnect_1/S00_ACLK] [get_bd_pins system_reset/slowest_sync_clk] [get_bd_pins top/clk] [get_bd_pins zynq_ultra_ps_e/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e/pl_clk0] [get_bd_pins zynq_ultra_ps_e/saxihpc0_fpd_aclk]
+connect_bd_net [get_bd_pins system_reset/slowest_sync_clk] [get_bd_pins top_axi_full/clk] [get_bd_pins zynq_ultra_ps_e/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e/pl_clk0] [get_bd_pins zynq_ultra_ps_e/saxihpc0_fpd_aclk]
+connect_bd_net [get_bd_pins system_reset/peripheral_aresetn] [get_bd_pins top_axi_full/rst]
 connect_bd_net [get_bd_pins system_reset/ext_reset_in] [get_bd_pins zynq_ultra_ps_e/pl_resetn0]
 
 
 # Create address segments
-assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces top/M_AXI] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP0/HPC0_DDR_LOW] -force
-assign_bd_address -offset 0xFF000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces top/M_AXI] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP0/HPC0_LPS_OCM] -force
-assign_bd_address -offset 0xA0000000 -range 0x00000800 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs top/S_AXI/reg0] -force
+assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces top_axi_full/M_AXI] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP0/HPC0_DDR_LOW] -force
+assign_bd_address -offset 0xFF000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces top_axi_full/M_AXI] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP0/HPC0_LPS_OCM] -force
+assign_bd_address -offset 0xA0000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs top_axi_full/S_AXI/reg0] -force
 
 
 # Validate and save block design
