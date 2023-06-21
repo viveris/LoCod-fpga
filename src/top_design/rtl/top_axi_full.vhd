@@ -29,6 +29,7 @@ port(
 	S_AXI_wvalid    : in std_logic;
 	S_AXI_wready    : out std_logic;
 
+	S_AXI_bid 		: out std_logic_vector(15 downto 0);
 	S_AXI_bresp     : out std_logic_vector(1 downto 0);
 	S_AXI_bvalid    : out std_logic;
 	S_AXI_bready    : in std_logic;
@@ -45,6 +46,7 @@ port(
 	S_AXI_arvalid   : in std_logic;
 	S_AXI_arready   : out std_logic;
 
+	S_AXI_rid 		: out std_logic_vector(15 downto 0);
 	S_AXI_rdata     : out std_logic_vector(127 downto 0);
 	S_AXI_rresp     : out std_logic_vector(1 downto 0);
 	S_AXI_rlast     : out std_logic;
@@ -70,6 +72,7 @@ port(
 	M_AXI_wvalid    : out std_logic;
 	M_AXI_wready    : in std_logic;
 
+	M_AXI_bid 		: in std_logic_vector(5 downto 0);
 	M_AXI_bresp     : in std_logic_vector(1 downto 0);
 	M_AXI_bvalid    : in std_logic;
 	M_AXI_bready    : out std_logic;
@@ -86,6 +89,7 @@ port(
 	M_AXI_arvalid   : out std_logic;
 	M_AXI_arready   : in std_logic;
 
+	M_AXI_rid 		: in std_logic_vector(5 downto 0);
 	M_AXI_rdata     : in std_logic_vector(127 downto 0);
 	M_AXI_rresp     : in std_logic_vector(1 downto 0);
 	M_AXI_rlast     : in std_logic;
