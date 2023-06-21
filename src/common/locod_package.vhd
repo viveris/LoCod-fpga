@@ -52,7 +52,6 @@ package locod_pkg is
                                                                 rresp => (others=>'0'),
                                                                 rvalid => '0');
 
-        -- TODO : replace MAX_ACCELERATORS by NB_ACCELERATORS to optimize design
         type AXI4Lite_m_to_s_array is array(natural range <>) of AXI4Lite_m_to_s;
         type AXI4Lite_s_to_m_array is array(natural range <>) of AXI4Lite_s_to_m;
 
