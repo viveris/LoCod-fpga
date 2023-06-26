@@ -1,97 +1,97 @@
 # AXI_INTERCONNECT
 
-L'*axi_interconnect* N-to-1 est un bridge AXI permettant de connecter plusieurs *master* à un unique *slave*, afin qu'ils communiquent selon le protocole *AXI4-light*. L'IP prend en charge la transmission des packets envoyés par les différents master vers le salve, et la répartition des réponses de ce dernier vers les master correspondants. Elle met également en place une bufferisation des packets, afin d'éviter les pertes de données en cas de transmission simultanée par plusieurs master.
+The *axi_interconnect* N-to-1 is an AXI bridge that connects several *masters* to a single *slave*, allowing them to communicate using the *AXI4-light* protocol. The IP handles the transmission of packets sent by the various masters to the salve, and the distribution of the latter's responses to the corresponding masters. It also buffers packets to prevent data loss in the event of simultaneous transmission by several masters.
 
-## Utilisation
+## Usage
 
-Description des génériques
+Generics description
 
-|Generic|Fonction|
+|Generic|Function|
 |---|---|
-|NB_MASTER|Nombre de master à connecter|
-|ADDR_SIZE|Taille des bus d'adresse|
-|DATA_SIZE|Taille des bus de donnée|
-|PROT_SIZE|Taille des flags de protection|
-|STRB_SIZE|Taille des flags de byte strobe|
-|RESP_SIZE|Taille des flags de réponse|
+|NB_MASTER|Number of masters to connect|
+|ADDR_SIZE|Address buses length|
+|DATA_SIZE|Data buses length|
+|PROT_SIZE|Protection flags length|
+|STRB_SIZE|Strobe flags length|
+|RESP_SIZE|Response flags length|
 
-![Image](images/chrono_axi_interconnect.png "Chronogramme séquence axi_interconnect")
+![Image](images/chrono_axi_interconnect.png "Sequence timeline axi_interconnect")
 
-## Description des sous-modules
+## Sub-modules description
 
 ### IP axi_channel_buffer
 
-Les *axi_channel_buffer* sont les blocs mettant en place la bufferisation des données envoyées par le périphériques *émettant* (et valides pour un seul cycle horloge) avant lecture par le périphérique *recevant*.
-Lorsqu'une donnée est présentée en entrée (et validée par le flag *i_data_valid*), le buffer l'enregistre et la maintien en sortie, tout en le signalant par le flag *o_data_valid*. Il abaisse également le flag *o_ready*, signifiant au périphérique *émettant* qu'il ne peut pas recevoir d'autre packets car déjà plein.
-Lorsque le périphérique *recevant* a effectivement lu la donnée, il le signale au buffer via le flag *i_ack*. Le buffer redevient alors *ready* et peut overwrite la donnée précédemment enregistrée.
+The *axi_channel_buffer* are blocks that allow data sent by the *sending* device (and valid for a single clock cycle) to be buffered before it is read by the *receiving* device.
+When data is presented on the input (and validated by the *i_data_valid* flag), the buffer saves it and holds it on the output, signalling it with the *o_data_valid* flag. It also sets the *o_ready* flag, telling the *transmitting* device that it can't receive any more packets, as it's already full.
+When the *receiving* device has actually read the data, it reports it to the buffer via the *i_ack* flag. The buffer then becomes *ready* again and can overwrite the previously stored data.
 
-![Image](images/chrono_axi_channel_buffer.png "Chronogramme séquence axi_channel_buffer")
+![Image](images/chrono_axi_channel_buffer.png "Sequence timeline axi_channel_buffer")
 
-|Signal|Port|Size|Fonction|
+|Signal|Port|Size|Function|
 |---|---|---|---|
-|i_clk|in|1|Horloge système|
-|i_rst_n|in|1|Reset, actif à l'état bas|
-|i_data|in|BUS_SIZE|Données reçues (addr ou data selon channel axi)|
-|i_data_aux|in|AUX_BUS_SIZE|Données auxiliaires reçues (prot, strb ou resp selon channel axi)|
-|i_data_valid|in|1|Flag de validité des données reçues|
-|o_ready|out|1|Buffer prêt à recevoir|
-|o_data|out|BUS_SIZE|Données retransmises (addr ou data selon channel axi)|
-|o_data_aux|out|AUX_BUS_SIZE|Données auxiliaires retransmises (prot, strb ou resp selon channel axi)|
-|o_data_valid|out|1|Flag de validité des données retransmises|
-|i_ack|out|1|Flag de réinitialisation du buffer|
+|i_clk|in|1|System clock|
+|i_rst_n|in|1|Reset, low-state active|
+|i_data|in|BUS_SIZE|Received data (addr or data depending on axi channel)|
+|i_data_aux|in|AUX_BUS_SIZE|Received auxiliary data (prot, strb or resp depending on axi channel)|
+|i_data_valid|in|1|Validity flag for received data|
+|o_ready|out|1|Buffer ready to receive|
+|o_data|out|BUS_SIZE|Forwarded data (addr or data depending on axi channel)|
+|o_data_aux|out|AUX_BUS_SIZE|Forwarded auxiliary data (prot, strb or resp depending on axi channel)|
+|o_data_valid|out|1|Validity flag for forwarded data|
+|i_ack|out|1|Buffer reset flag|
 
-### Type record pour les interfaces
+### Type records for interfaces
 
-Pour réaliser les interfaces, les signaux du bus AXI ont été regroupés dans des types record, afin de faciliter leur instanciation :
+To create the interfaces, the AXI bus signals have been grouped into type records to make them easier to instantiate :
 
-- *AXI4Lite_m_to_s* regroupe les signaux émis par le master vers le slave (channel *addr_read*, *addr_write* et *write* ainsi que signaux *ready* des channel *read* et *resp*).
-- *AXI4Lite_s_to_m* regroupe les signaux émis par le slave vers le master (channel *read* et *resp* ainsi que signaux *ready* des channel *addr_read*, *addr_write* et *write*).
-- *AXI4Lite_m_to_s_array* est un tableau de *AXI4Lite_m_to_s*, de taille équivalente au nombre de master à connecter.
-- *AXI4Lite_s_to_m_array* est un tableau de *AXI4Lite_s_to_m*, de taille équivalente au nombre de master à connecter.
+- *AXI4Lite_m_to_s* groups the signals sent by the master to the slave (*addr_read*, *addr_write* and *write* channels as well as *ready* signals from *read* and *resp* channels).
+- *AXI4Lite_s_to_m* groups the signals sent by the slave to the master (*read* and *resp* channels as well as *ready* signals from *addr_read*, *addr_write* and *write* channels).
+- *AXI4Lite_m_to_s_array* is an array of *AXI4Lite_m_to_s*, of size equal to the number of masters to be connected.
+- *AXI4Lite_s_to_m_array* is an array of *AXI4Lite_s_to_m*, of size equal to the number of masters to be connected.
 
 ![Image](images/arch_axi_interconnect.png "Architecture axi_interconnect")
 
 ### IP axi_slave_interface
 
-Les *axi_slave* regroupent 5 *axi_channel_buffer* pour les 5 channel du protocole *AXI4-Light*. Un *axi_slave* est instancié pour chaque master devant être connecté à l'*axi_interconnect*.
-Les ports *slave_interface* correspondent à l'interface type slave de l'IP, qui doit être connectée au master, et les ports *internal_interface* sont connectés à la machine interne de l'*axi_interconnect*. Les signaux *ready* en mode *in* des ces ports sont en réalité utilisés comme des signaux *ack* pour les *axi_channel_buffer* (cf description *axi_channel_buffer*).
+The *axi_slave* groups 5 *axi_channel_buffers* for the 5 channels of the *AXI4-Light* protocol. An *axi_slave* is instantiated for each master to be connected to the *axi_interconnect*.
+The *slave_interface* ports correspond to the IP's slave interface, which must be connected to the master, and the *internal_interface* ports are connected to the *axi_interconnect*'s internal state machine. The *in* mode *ready* signals for these ports are actually used as *ack* signals for the *axi_channel_buffer* (see *axi_channel_buffer* description).
 
 ![Image](images/arch_axi_slave_interface.png "Architecture axi_slave_interface")
 
-|Signal|Port|Size|Fonction|
+|Signal|Port|Size|Function|
 |---|---|---|---|
-|i_clk|in|1|Horloge système|
-|i_rst_n|in|1|Reset, actif à l'état bas|
-|i_slave_interface|in|AXI4Lite_m_to_s|Données reçues du master|
-|o_slave_interface|out|AXI4Lite_s_to_m|Données envoyées au master|
-|i_internal_interface|in|AXI4Lite_s_to_m|Données reçues en interne|
-|o_internal_interface|out|AXI4Lite_m_to_s|Données envoyées en interne|
+|i_clk|in|1|System clock|
+|i_rst_n|in|1|Reset, low-state active|
+|i_slave_interface|in|AXI4Lite_m_to_s|Data received from master|
+|o_slave_interface|out|AXI4Lite_s_to_m|Data sent to master|
+|i_internal_interface|in|AXI4Lite_s_to_m|Data received from internal logic|
+|o_internal_interface|out|AXI4Lite_m_to_s|Data sent to internal logic|
 
 ### IP axi_master_interface
 
-L'*axi_master_interface* contient les machines d'état gérant les séquences d'envoi et de réception des packets. C'est également elle qui assure l'interface type master de l'IP, via les ports *master_interface* devant être connectés à l'unique slave. Les ports *internal_interface* sont connectés à leurs homologues sur les IP *axi_slave_interface*.
+The *axi_master_interface* contains the state machines that manage the sending and receiving of packets. It also provides the IP's master interface, via the *master_interface* ports which must be connected to the single slave. The *internal_interface* ports are connected to their counterparts on the *axi_slave_interface* IPs.
 
 ![Image](images/arch_axi_master_interface.png "Architecture axi_master_interface")
 
-|Signal|Port|Size|Fonction|
+|Signal|Port|Size|Function|
 |---|---|---|---|
-|i_clk|in|1|Horloge système|
-|i_rst_n|in|1|Reset, actif à l'état bas|
-|i_internal_interface|in|AXI4Lite_s_to_m_array|Données reçues en interne|
-|o_internal_interface|out|AXI4Lite_m_to_s_array|Données envoyées en interne|
-|i_master_interface|in|AXI4Lite_m_to_s|Données reçues du slave|
-|o_master_interface|out|AXI4Lite_s_to_m|Données envoyées au slave|
+|i_clk|in|1|System clock|
+|i_rst_n|in|1|Reset, low-state active|
+|i_internal_interface|in|AXI4Lite_s_to_m_array|Data received from internal logic|
+|o_internal_interface|out|AXI4Lite_m_to_s_array|Data sent to internal logic|
+|i_master_interface|in|AXI4Lite_m_to_s|Data received from slave|
+|o_master_interface|out|AXI4Lite_s_to_m|Data sent to slave|
 
-Toutes les transactions sont gérées par une unique machine d'états (l'utilisation des interfaces ne permettant pas de splitter la gestion en différents process, les type record étant considérés comme ports uniques malgré les multiples signaux qu'ils contiennent, le synthétiseur ne parvient pas à générer une interface drivée par plusieurs process).
-La machine fonctionne selon un principe de round-robin, en interrogeant les *axi_slave_interface* chacune leur tour.
+All transactions are managed by a single state machine (as the use of interfaces does not allow management to be split into different processes, and type records are considered as single ports despite the multiple signals they contain, the synthesizer is unable to generate an interface driven by several processes).
+The machine operates on a round-robin principle, interrogating the *axi_slave_interface* in turn.
 
-![Image](images/sm_axi_master_interface.png "Machine d'état axi_master_interface")
+![Image](images/sm_axi_master_interface.png "State machine axi_master_interface")
 
-Si aucun des channel ne présente de donnée à transmettre, *s_master_index* est incrémenté et la machine d'état interroge le master suivant.
+If none of the channels has data to transmit, *s_master_index* is incremented and the status machine interrogates the next master.
 
-Si une donnée est disponible sur l'un des channel (*addr_read* ou *addr_write*), la machine enregistre les données dans des registres internes, acquitte le buffer afin qu'il se vide, et passe dans l'état correspondant.
-Les états correspondants au différents channel fonctionne tous selon le même principe :
-- Channel bufferisé (côté interne) : attendre que le channel côté master soit *ready*, présenter et valider la donnée, passer à l'état suivant.
-- Channel non-bufferisé (côté master) : attendre que la donnée soit valide, la récupérer et la transmettre au buffer interne, passer à l'état suivant.
+If data is available on one of the channels (*addr_read* or *addr_write*), the machine stores the data in internal registers, acknowledges the buffer so that it empties, and switches to the corresponding state.
+The states corresponding to the different channels all work on the same principle:
+- Buffered channel (internal side): wait until the channel on the master side is *ready*, present and acknowledge the data, then move on to the next state.
+- Unbuffered channel (master side): wait until the data is valid, retrieve and transmit it to the internal buffer, then move on to the next state.
 
-Une fois un transaction de *read* ou de *write* effectuée (retour à l'état *idle*), le flag correspondant (*s_read_done* ou *s_write_done*) est levé. Si une donnée est de nouveau disponible sur le même channel mais que le flag correspondant est levé, la machine passe malgré tout au master suivant, et ce afin d'éviter tout risque de famine. Chaque master peut donc effectuer une seule transaction *read* et une seule transaction *write* par tour.
+Once a *read* or *write* transaction has been completed (return to *idle* state), the corresponding flag (*s_read_done* or *s_write_done*) is raised. If data is available again on the same channel, but the corresponding flag is raised, the machine moves on to the next master, to avoid any risk of starvation. Each master can therefore perform a single *read* transaction and a single *write* transaction per turn.
