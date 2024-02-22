@@ -2,20 +2,29 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 package locod_pkg is
-        constant AXI_ADDR_WIDTH         : integer := 32;
-        constant AXI_DATA_WIDTH         : integer := 32;
 
-        type reg_array is array(natural range <>) of std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
+        constant S_AXI_ADDR_WIDTH       : integer := 32;
+        constant S_AXI_DATA_WIDTH       : integer := 128;
+        constant S_AXI_ID_WIDTH         : integer := 16;
+
+        constant M_AXI_ADDR_WIDTH       : integer := 32;
+        constant M_AXI_DATA_WIDTH       : integer := 128;
+        constant M_AXI_ID_WIDTH         : integer := 6;
+        
+        constant AXIL_ADDR_WIDTH        : integer := 32;
+        constant AXIL_DATA_WIDTH        : integer := 32;
+
+        type reg_array is array(natural range <>) of std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
 
         type AXI4Lite_m_to_s is record
-            awaddr : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+            awaddr : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0);
             awprot : std_logic_vector(2 downto 0);
             awvalid : std_logic;
-            wdata : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
-            wstrb : std_logic_vector(3 downto 0);
+            wdata : std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
+            wstrb : std_logic_vector((AXIL_DATA_WIDTH/8)-1 downto 0);
             wvalid : std_logic;
             bready : std_logic;
-            araddr : std_logic_vector(AXI_ADDR_WIDTH-1 downto 0);
+            araddr : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0);
             arprot : std_logic_vector(2 downto 0);
             arvalid : std_logic;
             rready : std_logic;
@@ -27,7 +36,7 @@ package locod_pkg is
             bresp : std_logic_vector(1 downto 0);
             bvalid : std_logic;
             arready : std_logic;
-            rdata : std_logic_vector(AXI_DATA_WIDTH-1 downto 0);
+            rdata : std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
             rresp : std_logic_vector(1 downto 0);
             rvalid : std_logic;
         end record AXI4Lite_s_to_m;
