@@ -31,11 +31,8 @@ add_files { ../src/axi_reg/rtl/axi_reg.vhd \
 			../src/axil_adapter/rtl/axil_adapter.v \
 			../src/axil_adapter/rtl/axil_adapter_rd.v \
 			../src/axil_adapter/rtl/axil_adapter_wr.v \
-			../src/common/memory_ctrl_d21.vhd \
-			../src/common/axi_master_if.vhd \
-			../src/common/axi_slave_if.vhd \
-			../src/common/locod_package.vhd \
-			../src/top_design/rtl/top_axi_full.vhd }	
+			../src/axil_axi_adapter/rtl/axil_axi_adapter.vhd \
+			../src/common/locod_package_xilinx.vhd}	
 
 
 # Importing generated files
