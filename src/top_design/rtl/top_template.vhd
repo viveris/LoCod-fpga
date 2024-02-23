@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 use work.locod_pkg.all;
 
-entity top is
+entity locod_top is
 port(
 	-- Clock and reset
     clk_i             : in std_logic;
@@ -96,9 +96,9 @@ port(
 	M_AXI_rvalid    : in std_logic;
 	M_AXI_rready    : out std_logic
 );
-end top;
+end locod_top;
 
-architecture Behavioral of top is
+architecture Behavioral of locod_top is
 
 -- Constants
 constant NB_REGISTERS_OUT : integer := (2*NB_ACCELERATORS)+1;
@@ -292,7 +292,7 @@ port map(
     S_AXIL_rready_i     => M_AXIL_out.rready,
 
     M_AXI_awid_o  	    => M_AXI_awid,
-	M_AXI_awaddr_o      => M_AXI_awaddr,
+	M_AXI_awaddr_o      => M_AXI_awaddr(AXIL_ADDR_WIDTH-1 downto 0),
 	M_AXI_awlen_o       => M_AXI_awlen,
 	M_AXI_awsize_o      => M_AXI_awsize,
 	M_AXI_awburst_o     => M_AXI_awburst,
@@ -312,7 +312,7 @@ port map(
 	M_AXI_bvalid_i      => M_AXI_bvalid,
 	M_AXI_bready_o      => M_AXI_bready,
 	M_AXI_arid_o  	    => M_AXI_arid,
-	M_AXI_araddr_o      => M_AXI_araddr,
+	M_AXI_araddr_o      => M_AXI_araddr(AXIL_ADDR_WIDTH-1 downto 0),
 	M_AXI_arlen_o       => M_AXI_arlen,
 	M_AXI_arsize_o      => M_AXI_arsize,
 	M_AXI_arburst_o     => M_AXI_arburst,
