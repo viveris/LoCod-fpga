@@ -54,6 +54,9 @@ architecture Behavioral of axi_reg is
 -- ADDR_LSB = 3 for 64 bits (n downto 3)
 constant ADDR_LSB       : integer := (AXIL_DATA_WIDTH/32)+ 1;
 constant REG_ADDR_WIDTH : integer := integer(ceil(log2(real((NB_REGISTERS_OUT+NB_REGISTERS_IN)*4)))); --Address range that we use over bytes
+constant REG_ADDR_MASK  : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0) := (AXIL_ADDR_WIDTH-1 downto REG_ADDR_WIDTH => '0') & (REG_ADDR_WIDTH-1 downto 0 => '1');
+constant NULL_VECTOR    : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0) := (others => '0');
+
 
 -- AXI4 LITE signals
 signal axil_awaddr      : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0);
@@ -93,8 +96,8 @@ S_AXIL_rdata_o	    <= axil_rdata;
 S_AXIL_rresp_o	    <= axil_rresp;
 S_AXIL_rvalid_o	    <= axil_rvalid;
 
-axil_awaddr_valid <= to_integer(shift_right(unsigned(axil_awaddr(REG_ADDR_WIDTH-1 downto 0)), ADDR_LSB));
-axil_araddr_valid <= to_integer(shift_right(unsigned(axil_araddr(REG_ADDR_WIDTH-1 downto 0)), ADDR_LSB));
+axil_awaddr_valid <= to_integer(shift_right(unsigned(axil_awaddr(REG_ADDR_WIDTH-1 downto 0)), ADDR_LSB)) when ((axil_awaddr and (not REG_ADDR_MASK)) = NULL_VECTOR) else -1;
+axil_araddr_valid <= to_integer(shift_right(unsigned(axil_araddr(REG_ADDR_WIDTH-1 downto 0)), ADDR_LSB)) when ((axil_araddr and (not REG_ADDR_MASK)) = NULL_VECTOR) else -1;
 
 REG_ARRAY_PORT_o <= registers_out;
 
@@ -186,9 +189,9 @@ begin
             registers_out <= (others => (others => '0'));
         else
             if (slv_reg_wren = '1') then
-                if (axil_awaddr_valid < NB_REGISTERS_OUT) then  --Output port
+                if ((axil_awaddr_valid >= 0) and (axil_awaddr_valid < NB_REGISTERS_OUT)) then   --Output port
                     registers_out(axil_awaddr_valid) <= S_AXIL_wdata_i;
-                else                                            --Input port
+                else                                                                            --Not output port
                     --nothing
                 end if;
             end if;
@@ -231,7 +234,7 @@ begin
     if rising_edge(clk_i) then 
         if rstn_i = '0' then
             axil_arready <= '0';
-            axil_araddr  <= (others => '1');
+            axil_araddr  <= (others => '0');
         else
             if (axil_arready = '0' and S_AXIL_arvalid_i = '1' and (axil_rvalid = '0' or S_AXIL_rready_i = '1')) then
                 -- indicates that the slave has acceped the valid read address
@@ -291,10 +294,12 @@ begin
                 -- acceptance of read address by the slave (axil_arready), 
                 -- output the read dada 
                 -- Read address mux
-                if (axil_araddr_valid < NB_REGISTERS_OUT) then    --Output port
+                if ((axil_araddr_valid >= 0) and (axil_araddr_valid < NB_REGISTERS_OUT)) then                                       --Output port
                     axil_rdata <= registers_out(axil_araddr_valid);
-                else                                                --Input port
+                elsif ((axil_araddr_valid >= NB_REGISTERS_OUT) and (axil_araddr_valid < (NB_REGISTERS_OUT+NB_REGISTERS_IN))) then   --Input port
                     axil_rdata <= REG_ARRAY_PORT_i(axil_araddr_valid - NB_REGISTERS_OUT);
+                else                                                                                                                --Not output or input port
+                    axil_rdata <= (others => '0');
                 end if;
             end if;
         end if;
