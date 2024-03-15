@@ -19,10 +19,10 @@ class TB:
 		self.reg_ports_in = [dut.REG4, dut.REG5, dut.REG6, dut.REG7]
 
 		#AXI Lite Bus
-		self.axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.clk, dut.rstn, False)
+		self.axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXIL"), dut.clk_i, dut.rstn_i, False)
 
 		#Start clock
-		cocotb.start_soon(Clock(dut.clk, period=10, units="ns").start())
+		cocotb.start_soon(Clock(dut.clk_i, period=10, units="ns").start())
 
 
 	async def cycle_reset(self):
@@ -30,11 +30,11 @@ class TB:
 			if (i%2 == 0):
 				self.reg_ports_in[i].value = 0
 
-		self.dut.rstn.value = 0
+		self.dut.rstn_i.value = 0
 		for i in range(5):
-			await FallingEdge(self.dut.clk)
-		self.dut.rstn.value = 1
-		await FallingEdge(self.dut.clk)
+			await FallingEdge(self.dut.clk_i)
+		self.dut.rstn_i.value = 1
+		await FallingEdge(self.dut.clk_i)
 
 
 	async def test_port(self, port, reg_addr, direction):
