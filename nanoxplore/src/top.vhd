@@ -7,8 +7,6 @@ use ieee.numeric_std.all;
 LIBRARY NX;
 USE NX.nxpackage.all;
 
-use work.locod_pkg.all;
-
 entity top is
 port (
     clk_i                   : in std_logic;
@@ -20,6 +18,14 @@ end top;
 
 
 architecture rtl of top is
+
+constant S_AXI_ADDR_WIDTH       : integer := 40;
+constant S_AXI_DATA_WIDTH       : integer := 128;
+constant S_AXI_ID_WIDTH         : integer := 12;
+constant M_AXI_ADDR_WIDTH       : integer := 40;
+constant M_AXI_DATA_WIDTH       : integer := 128;
+constant M_AXI_ID_WIDTH         : integer := 5;
+constant BASE_ADDRESS           : integer := 268435456;
 
 signal clk_rstn_fpga        : std_logic_vector(1 downto 0) := (others => '0');
 signal clk_nic_fabric       : std_logic_vector(18 downto 2) := (others => '0');
@@ -125,6 +131,15 @@ begin
 end process;
 
 locod_top_inst : entity work.locod_top
+generic map(
+    S_AXI_ADDR_WIDTH    => S_AXI_ADDR_WIDTH,
+    S_AXI_DATA_WIDTH    => S_AXI_DATA_WIDTH,
+    S_AXI_ID_WIDTH      => S_AXI_ID_WIDTH,
+    M_AXI_ADDR_WIDTH    => M_AXI_ADDR_WIDTH,
+    M_AXI_DATA_WIDTH    => M_AXI_DATA_WIDTH,
+    M_AXI_ID_WIDTH      => M_AXI_ID_WIDTH,
+    BASE_ADDRESS        => BASE_ADDRESS
+)
 port map(
     clk_i               => clk_i,
     rstn_i              => rstn_i,

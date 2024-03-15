@@ -32,7 +32,7 @@ add_files { ../src/axi_reg/rtl/axi_reg.vhd \
 			../src/axil_adapter/rtl/axil_adapter_rd.v \
 			../src/axil_adapter/rtl/axil_adapter_wr.v \
 			../src/axil_axi_adapter/rtl/axil_axi_adapter.vhd \
-			../src/common/locod_package_xilinx.vhd}	
+			../src/common/locod_package.vhd}	
 
 
 # Importing generated files

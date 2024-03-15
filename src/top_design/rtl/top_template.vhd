@@ -5,10 +5,19 @@ use ieee.numeric_std.all;
 use work.locod_pkg.all;
 
 entity locod_top is
+generic(
+    S_AXI_ADDR_WIDTH    : integer := 32;
+    S_AXI_DATA_WIDTH    : integer := 128;
+    S_AXI_ID_WIDTH      : integer := 16;
+    M_AXI_ADDR_WIDTH    : integer := 32;
+    M_AXI_DATA_WIDTH    : integer := 128;
+    M_AXI_ID_WIDTH      : integer := 6;
+    BASE_ADDRESS        : integer := 0
+);
 port(
 	-- Clock and reset
-    clk_i             : in std_logic;
-    rstn_i             : in std_logic;
+    clk_i               : in std_logic;
+    rstn_i              : in std_logic;
 
     -- AXI4 full slave
     S_AXI_awid  	    : in std_logic_vector(S_AXI_ID_WIDTH-1 downto 0);
@@ -54,92 +63,76 @@ port(
 	S_AXI_rready        : in std_logic;
 
     -- AXI4 full master
-    M_AXI_awid  	: out std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
-	M_AXI_awaddr    : out std_logic_vector(M_AXI_ADDR_WIDTH-1 downto 0);
-	M_AXI_awlen     : out std_logic_vector(7 downto 0);
-	M_AXI_awsize    : out std_logic_vector(2 downto 0);
-	M_AXI_awburst   : out std_logic_vector(1 downto 0);
-	M_AXI_awlock    : out std_logic;
-	M_AXI_awcache   : out std_logic_vector(3 downto 0);
-	M_AXI_awprot    : out std_logic_vector(2 downto 0);
-	M_AXI_awqos     : out std_logic_vector(3 downto 0);
-	M_AXI_awvalid   : out std_logic;
-	M_AXI_awready   : in std_logic;
+    M_AXI_awid  	    : out std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
+	M_AXI_awaddr        : out std_logic_vector(M_AXI_ADDR_WIDTH-1 downto 0);
+	M_AXI_awlen         : out std_logic_vector(7 downto 0);
+	M_AXI_awsize        : out std_logic_vector(2 downto 0);
+	M_AXI_awburst       : out std_logic_vector(1 downto 0);
+	M_AXI_awlock        : out std_logic;
+	M_AXI_awcache       : out std_logic_vector(3 downto 0);
+	M_AXI_awprot        : out std_logic_vector(2 downto 0);
+	M_AXI_awqos         : out std_logic_vector(3 downto 0);
+	M_AXI_awvalid       : out std_logic;
+	M_AXI_awready       : in std_logic;
 
-	M_AXI_wdata     : out std_logic_vector(M_AXI_DATA_WIDTH-1 downto 0);
-	M_AXI_wstrb     : out std_logic_vector((M_AXI_DATA_WIDTH/8)-1 downto 0);
-	M_AXI_wlast     : out std_logic;
-	M_AXI_wvalid    : out std_logic;
-	M_AXI_wready    : in std_logic;
+	M_AXI_wdata         : out std_logic_vector(M_AXI_DATA_WIDTH-1 downto 0);
+	M_AXI_wstrb         : out std_logic_vector((M_AXI_DATA_WIDTH/8)-1 downto 0);
+	M_AXI_wlast         : out std_logic;
+	M_AXI_wvalid        : out std_logic;
+	M_AXI_wready        : in std_logic;
 
-	M_AXI_bid 		: in std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
-	M_AXI_bresp     : in std_logic_vector(1 downto 0);
-	M_AXI_bvalid    : in std_logic;
-	M_AXI_bready    : out std_logic;
+	M_AXI_bid 		    : in std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
+	M_AXI_bresp         : in std_logic_vector(1 downto 0);
+	M_AXI_bvalid        : in std_logic;
+	M_AXI_bready        : out std_logic;
 
-	M_AXI_arid  	: out std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
-	M_AXI_araddr    : out std_logic_vector(M_AXI_ADDR_WIDTH-1 downto 0);
-	M_AXI_arlen     : out std_logic_vector(7 downto 0);
-	M_AXI_arsize    : out std_logic_vector(2 downto 0);
-	M_AXI_arburst   : out std_logic_vector(1 downto 0);
-	M_AXI_arlock    : out std_logic;
-	M_AXI_arcache   : out std_logic_vector(3 downto 0);
-	M_AXI_arprot    : out std_logic_vector(2 downto 0);
-	M_AXI_arqos     : out std_logic_vector(3 downto 0);
-	M_AXI_arvalid   : out std_logic;
-	M_AXI_arready   : in std_logic;
+	M_AXI_arid  	    : out std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
+	M_AXI_araddr        : out std_logic_vector(M_AXI_ADDR_WIDTH-1 downto 0);
+	M_AXI_arlen         : out std_logic_vector(7 downto 0);
+	M_AXI_arsize        : out std_logic_vector(2 downto 0);
+	M_AXI_arburst       : out std_logic_vector(1 downto 0);
+	M_AXI_arlock        : out std_logic;
+	M_AXI_arcache       : out std_logic_vector(3 downto 0);
+	M_AXI_arprot        : out std_logic_vector(2 downto 0);
+	M_AXI_arqos         : out std_logic_vector(3 downto 0);
+	M_AXI_arvalid       : out std_logic;
+	M_AXI_arready       : in std_logic;
 
-	M_AXI_rid 		: in std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
-	M_AXI_rdata     : in std_logic_vector(M_AXI_DATA_WIDTH-1 downto 0);
-	M_AXI_rresp     : in std_logic_vector(1 downto 0);
-	M_AXI_rlast     : in std_logic;
-	M_AXI_rvalid    : in std_logic;
-	M_AXI_rready    : out std_logic
+	M_AXI_rid           : in std_logic_vector(M_AXI_ID_WIDTH-1 downto 0);
+	M_AXI_rdata         : in std_logic_vector(M_AXI_DATA_WIDTH-1 downto 0);
+	M_AXI_rresp         : in std_logic_vector(1 downto 0);
+	M_AXI_rlast         : in std_logic;
+	M_AXI_rvalid        : in std_logic;
+	M_AXI_rready        : out std_logic
 );
 end locod_top;
 
 architecture Behavioral of locod_top is
 
+
 -- Constants
 constant NB_REGISTERS_OUT : integer := (2*NB_ACCELERATORS)+1;
 constant NB_REGISTERS_IN : integer := NB_ACCELERATORS+1;
 
-
--- Slave AXI Lite signals between AXI to AXIL Adapter and AXI Reg
-signal S_AXIL_awaddr : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0);
-signal S_AXIL_awprot : std_logic_vector(2 downto 0);
-signal S_AXIL_awvalid : std_logic;
-signal S_AXIL_awready : std_logic;
-signal S_AXIL_wdata : std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
-signal S_AXIL_wstrb : std_logic_vector((AXIL_DATA_WIDTH/8)-1 downto 0);
-signal S_AXIL_wvalid : std_logic;
-signal S_AXIL_wready : std_logic;
-signal S_AXIL_bresp : std_logic_vector(1 downto 0);
-signal S_AXIL_bvalid :  std_logic;
-signal S_AXIL_bready : std_logic;
-signal S_AXIL_araddr : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0);
-signal S_AXIL_arprot : std_logic_vector(2 downto 0);
-signal S_AXIL_arvalid : std_logic;
-signal S_AXIL_arready : std_logic;
-signal S_AXIL_rdata : std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
-signal S_AXIL_rresp : std_logic_vector(1 downto 0);
-signal S_AXIL_rvalid : std_logic;
-signal S_AXIL_rready : std_logic;
-
+-- AXI Lite signals between AXI to AXIL Adapter and AXI Reg
+signal S_AXIL_in : AXI4Lite_m_to_s;
+signal S_AXIL_out : AXI4Lite_s_to_m;
 
 -- Control registers
 signal registers_out : reg_array(NB_REGISTERS_OUT-1 downto 0);
 signal registers_in : reg_array(NB_REGISTERS_IN-1 downto 0);
 
-
+-- Array of AXI Lite signals between Locod accelerators and AXIL Interconnect
 signal M_AXIL_out_array : AXI4Lite_m_to_s_array(NB_ACCELERATORS-1 downto 0);
 signal M_AXIL_in_array : AXI4Lite_s_to_m_array(NB_ACCELERATORS-1 downto 0);
 
+-- AXI Lite signals between AXIL Interconnect and AXIL to AXI Adapter
 signal M_AXIL_out : AXI4Lite_m_to_s;
 signal M_AXIL_in : AXI4Lite_s_to_m;
 
 
 begin
+
 
 axi_axil_adapter_i : entity work.axi_axil_adapter
 generic map (
@@ -188,55 +181,39 @@ port map (
     s_axi_rvalid		=> S_AXI_rvalid,
     s_axi_rready		=> S_AXI_rready,
 
-    m_axil_awaddr  		=> S_AXIL_awaddr,
-    m_axil_awprot  		=> S_AXIL_awprot,
-    m_axil_awvalid  	=> S_AXIL_awvalid,
-    m_axil_awready  	=> S_AXIL_awready,
-    m_axil_wdata  		=> S_AXIL_wdata,
-    m_axil_wstrb  		=> S_AXIL_wstrb,
-    m_axil_wvalid  		=> S_AXIL_wvalid,
-    m_axil_wready  		=> S_AXIL_wready,
-    m_axil_bresp  		=> S_AXIL_bresp,
-    m_axil_bvalid  		=> S_AXIL_bvalid,
-    m_axil_bready  		=> S_AXIL_bready,
-    m_axil_araddr  		=> S_AXIL_araddr,
-    m_axil_arprot  		=> S_AXIL_arprot,
-    m_axil_arvalid  	=> S_AXIL_arvalid,
-    m_axil_arready  	=> S_AXIL_arready,
-    m_axil_rdata  		=> S_AXIL_rdata,
-    m_axil_rresp  		=> S_AXIL_rresp,
-    m_axil_rvalid  		=> S_AXIL_rvalid,
-    m_axil_rready  		=> S_AXIL_rready  
+    m_axil_awaddr  		=> S_AXIL_in.awaddr,
+    m_axil_awprot  		=> S_AXIL_in.awprot,
+    m_axil_awvalid  	=> S_AXIL_in.awvalid,
+    m_axil_awready  	=> S_AXIL_out.awready,
+    m_axil_wdata  		=> S_AXIL_in.wdata,
+    m_axil_wstrb  		=> S_AXIL_in.wstrb,
+    m_axil_wvalid  		=> S_AXIL_in.wvalid,
+    m_axil_wready  		=> S_AXIL_out.wready,
+    m_axil_bresp  		=> S_AXIL_out.bresp,
+    m_axil_bvalid  		=> S_AXIL_out.bvalid,
+    m_axil_bready  		=> S_AXIL_in.bready,
+    m_axil_araddr  		=> S_AXIL_in.araddr,
+    m_axil_arprot  		=> S_AXIL_in.arprot,
+    m_axil_arvalid  	=> S_AXIL_in.arvalid,
+    m_axil_arready  	=> S_AXIL_out.arready,
+    m_axil_rdata  		=> S_AXIL_out.rdata,
+    m_axil_rresp  		=> S_AXIL_out.rresp,
+    m_axil_rvalid  		=> S_AXIL_out.rvalid,
+    m_axil_rready  		=> S_AXIL_in.rready 
 );
 
 
 axi_reg_i : entity work.axi_reg
 generic map(
     NB_REGISTERS_OUT    => NB_REGISTERS_OUT,
-    NB_REGISTERS_IN     => NB_REGISTERS_IN
+    NB_REGISTERS_IN     => NB_REGISTERS_IN,
+    BASE_ADDRESS        => std_logic_vector(to_unsigned(BASE_ADDRESS, AXIL_ADDR_WIDTH))
 )
 port map(
     clk_i 		        => clk_i,
     rstn_i 	            => rstn_i,
-    S_AXIL_awaddr_i     => S_AXIL_awaddr,
-    S_AXIL_awprot_i     => S_AXIL_awprot,
-    S_AXIL_awvalid_i    => S_AXIL_awvalid,
-    S_AXIL_awready_o    => S_AXIL_awready,
-    S_AXIL_wdata_i      => S_AXIL_wdata,
-    S_AXIL_wstrb_i      => S_AXIL_wstrb,
-    S_AXIL_wvalid_i     => S_AXIL_wvalid,
-    S_AXIL_wready_o     => S_AXIL_wready,
-    S_AXIL_bresp_o      => S_AXIL_bresp,
-    S_AXIL_bvalid_o     => S_AXIL_bvalid,
-    S_AXIL_bready_i     => S_AXIL_bready,
-    S_AXIL_araddr_i     => S_AXIL_araddr,
-    S_AXIL_arprot_i     => S_AXIL_arprot,
-    S_AXIL_arvalid_i    => S_AXIL_arvalid,
-    S_AXIL_arready_o    => S_AXIL_arready,
-    S_AXIL_rdata_o      => S_AXIL_rdata,
-    S_AXIL_rresp_o      => S_AXIL_rresp,
-    S_AXIL_rvalid_o     => S_AXIL_rvalid,
-    S_AXIL_rready_i     => S_AXIL_rready,
+    S_AXIL_in           => S_AXIL_in,
+    S_AXIL_out          => S_AXIL_out,
     REG_ARRAY_PORT_o    => registers_out,
     REG_ARRAY_PORT_i    => registers_in
 );

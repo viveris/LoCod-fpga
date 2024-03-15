@@ -730,6 +730,15 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset system_reset
 
 # Create instance: locod_top, and set properties
 create_bd_cell -type module -reference locod_top locod_top
+set_property -dict [ list \
+	S_AXI_ADDR_WIDTH {32} \
+    S_AXI_DATA_WIDTH {128} \
+    S_AXI_ID_WIDTH {16} \
+    M_AXI_ADDR_WIDTH {32} \
+    M_AXI_DATA_WIDTH {128} \
+    M_AXI_ID_WIDTH {6} \
+    BASE_ADDRESS {2684354560} \
+] [get_bd_cells locod_top]
 
 
 # Create interface connections
