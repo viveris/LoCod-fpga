@@ -11,7 +11,7 @@ Allong with the source files are also present test-bench files to test each comp
 ## Repository organization
 - `src/` : contains source code that describe the LoCod FPGA design. The top design architecture is described in the file [architecture.md](doc/architecture.md). Each component of the design have also a `tb/` directory to run a test, and a `doc/` directory that describe the component
 - `doc/` : contains documentation files of the global LoCoD FPGA design
-- `vivado/` : contains specific files and scripts to generate a Vivado project to implement the design on an Ultra96 V2 evaluation board. A [README.md](vivado/README.md) in this directory present the steps to generate the bitstream
+- `xilinx/` : contains specific files and scripts to generate a Vivado project to implement the design on an Ultra96 V2 evaluation board. A [README.md](xilinx/README.md) in this directory present the steps to generate the bitstream
 - `nanoxplore/` : contains specific files and scripts to generate a NanoXplore project to implement the design on an NG-Ultra board. A [README.md](nanoxplore/README.md) in this directory present the steps to generate the bitstream
 
 <br>
