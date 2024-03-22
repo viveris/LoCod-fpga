@@ -42,10 +42,10 @@ add_files ../src/generated_files
 # Target specific operations
 switch $target {
 	ultra96 {
-		source ultra96/configure_project.tcl
+		source ultra96/configure_project_ultra96.tcl
 	}
 	enclustra {
-		source enclustra/configure_project.tcl
+		source enclustra/configure_project_enclustra.tcl
 	} 
 	default {
 		puts "$target not available"

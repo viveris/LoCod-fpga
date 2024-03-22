@@ -14,7 +14,7 @@ EXTRA_ARGS := --ieee=synopsys -fexplicit --std=08 -frelaxed
 # Source files
 VHDL_SOURCES += $(PWD)/../rtl/axi_reg.vhd
 VHDL_SOURCES += $(PWD)/../rtl/axi_reg_ip.vhd
-VHDL_SOURCES += $(PWD)/../../common/locod_package_xilinx.vhd
+VHDL_SOURCES += $(PWD)/../../common/locod_package.vhd
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
 TOPLEVEL = axi_reg_ip

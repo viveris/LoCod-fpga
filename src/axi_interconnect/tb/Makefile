@@ -16,7 +16,7 @@ VHDL_SOURCES += $(PWD)/../rtl/axi_interconnect.vhd
 VHDL_SOURCES += $(PWD)/../rtl/axi_channel_buffer.vhd
 VHDL_SOURCES += $(PWD)/../rtl/axi_master_interface.vhd
 VHDL_SOURCES += $(PWD)/../rtl/axi_slave_interface.vhd
-VHDL_SOURCES += $(PWD)/../../common/locod_package_xilinx.vhd
+VHDL_SOURCES += $(PWD)/../../common/locod_package.vhd
 
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
