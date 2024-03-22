@@ -7,17 +7,19 @@ use ieee.numeric_std.all;
 LIBRARY NX;
 USE NX.nxpackage.all;
 
-entity top is
+use work.locod_pkg.all;
+
+entity top_ngultra is
 port (
     clk_i                   : in std_logic;
     rstn_i                  : in std_logic;
     led_s_awvalid_o         : out std_logic;
     led_m_awvalid_o         : out std_logic
 );
-end top;
+end top_ngultra;
 
 
-architecture rtl of top is
+architecture rtl of top_ngultra is
 
 constant S_AXI_ADDR_WIDTH       : integer := 40;
 constant S_AXI_DATA_WIDTH       : integer := 128;
@@ -25,7 +27,7 @@ constant S_AXI_ID_WIDTH         : integer := 12;
 constant M_AXI_ADDR_WIDTH       : integer := 40;
 constant M_AXI_DATA_WIDTH       : integer := 128;
 constant M_AXI_ID_WIDTH         : integer := 5;
-constant BASE_ADDRESS           : integer := 268435456;
+constant BASE_ADDRESS           : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0) := x"10000000";
 
 signal clk_rstn_fpga        : std_logic_vector(1 downto 0) := (others => '0');
 signal clk_nic_fabric       : std_logic_vector(18 downto 2) := (others => '0');
