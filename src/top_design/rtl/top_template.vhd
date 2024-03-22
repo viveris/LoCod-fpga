@@ -6,13 +6,13 @@ use work.locod_pkg.all;
 
 entity locod_top is
 generic(
-    S_AXI_ADDR_WIDTH    : integer := 32;
-    S_AXI_DATA_WIDTH    : integer := 128;
-    S_AXI_ID_WIDTH      : integer := 16;
-    M_AXI_ADDR_WIDTH    : integer := 32;
-    M_AXI_DATA_WIDTH    : integer := 128;
-    M_AXI_ID_WIDTH      : integer := 6;
-    BASE_ADDRESS        : integer := 0
+    S_AXI_ADDR_WIDTH    : integer := 0;
+    S_AXI_DATA_WIDTH    : integer := 0;
+    S_AXI_ID_WIDTH      : integer := 0;
+    M_AXI_ADDR_WIDTH    : integer := 0;
+    M_AXI_DATA_WIDTH    : integer := 0;
+    M_AXI_ID_WIDTH      : integer := 0;
+    BASE_ADDRESS        : std_logic_vector(AXIL_ADDR_WIDTH-1 downto 0) := (others => '0')
 );
 port(
 	-- Clock and reset
@@ -207,7 +207,7 @@ axi_reg_i : entity work.axi_reg
 generic map(
     NB_REGISTERS_OUT    => NB_REGISTERS_OUT,
     NB_REGISTERS_IN     => NB_REGISTERS_IN,
-    BASE_ADDRESS        => std_logic_vector(to_unsigned(BASE_ADDRESS, AXIL_ADDR_WIDTH))
+    BASE_ADDRESS        => BASE_ADDRESS
 )
 port map(
     clk_i 		        => clk_i,

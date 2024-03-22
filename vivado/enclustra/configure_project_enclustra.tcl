@@ -5,12 +5,12 @@ set_property target_language VHDL [current_project]
 
 
 # Importing target specific source files
-add_files {	enclustra/src/bd_enclustra_wrapper.vhd }
+add_files {	enclustra/src/top_enclustra.vhd }
 
 	
 # Setting top module	
-set_property top bd_enclustra_wrapper [current_fileset]
+set_property top top_enclustra [current_fileset]
 
 
 # Creating block design form BD TCL script
-source enclustra/scripts/create_bd.tcl
+source enclustra/scripts/create_bd_soc_wrapper_enclustra.tcl
