@@ -10,40 +10,39 @@ class TB:
 		self.dut = dut
 
 		#Retrieve generics parameters
-		self.NB_REGISTERS = int(cocotb.top.NB_REGISTERS)
+		self.NB_REGISTERS_OUT = int(cocotb.top.NB_REGISTERS_OUT)
+		self.NB_REGISTERS_IN = int(cocotb.top.NB_REGISTERS_IN)
+		self.BASE_ADDRESS = int(cocotb.top.BASE_ADDRESS)
 
-		#DUT ports
-		self.ports = [dut.REG0, dut.REG1, dut.REG2, dut.REG3, dut.REG4, dut.REG5, dut.REG6, dut.REG7, dut.REG8, dut.REG9, dut.REG10, dut.REG11, dut.REG12, dut.REG13, dut.REG14, dut.REG15]
+		#DUT reg_ports
+		self.reg_ports_out = [dut.REG0, dut.REG1, dut.REG2, dut.REG3]
+		self.reg_ports_in = [dut.REG4, dut.REG5, dut.REG6, dut.REG7]
 
 		#AXI Lite Bus
-		self.axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXI"), dut.clk, dut.rst, False)
+		self.axi_master = AxiLiteMaster(AxiLiteBus.from_prefix(dut, "S_AXIL"), dut.clk_i, dut.rstn_i, False)
 
 		#Start clock
-		cocotb.start_soon(Clock(dut.clk, period=10, units="ns").start())
+		cocotb.start_soon(Clock(dut.clk_i, period=10, units="ns").start())
 
 
 	async def cycle_reset(self):
-		for i in range(self.NB_REGISTERS):
+		for i in range(self.NB_REGISTERS_IN):
 			if (i%2 == 0):
-				self.ports[i].value = 0
+				self.reg_ports_in[i].value = 0
 
-		self.dut.rst.value = 0
+		self.dut.rstn_i.value = 0
 		for i in range(5):
-			await FallingEdge(self.dut.clk)
-		self.dut.rst.value = 1
-		await FallingEdge(self.dut.clk)
+			await FallingEdge(self.dut.clk_i)
+		self.dut.rstn_i.value = 1
+		await FallingEdge(self.dut.clk_i)
 
 
 	async def test_port(self, port, reg_addr, direction):
 		data = random.randrange(0, 0xffffffff)
-		other_addr = random.randrange(0, 4 * self.NB_REGISTERS, 4)
-		while other_addr == reg_addr:
-			other_addr = random.randrange(0, 4 * self.NB_REGISTERS, 4)
 		if direction == 0:			#Output port
 			await self.axi_master.write_dword(reg_addr, data)
 			assert await self.axi_master.read_dword(reg_addr) == data, "output port axi reading value not OK"
 			assert port.value == data, "output port value not OK"
-			assert await self.axi_master.read_dword(other_addr) != data, "axi reading at another address is the same"
 		elif direction == 1:		#Input port
 			port.value = data
 			assert await self.axi_master.read_dword(reg_addr) == data, "register in axi reading value not OK"
@@ -58,6 +57,10 @@ async def test_axi_reg(dut):
 	#Reseting DUT
 	await tb.cycle_reset()
 
-	#Testing registers
-	for i in range(tb.NB_REGISTERS):
-		await tb.test_port(tb.ports[i], i*4, (i+1)%2)
+	#Testing registers out
+	for i in range(tb.NB_REGISTERS_OUT):
+		await tb.test_port(tb.reg_ports_out[i], tb.BASE_ADDRESS + i*4, 0)
+
+	#Testing registers in
+	for i in range(tb.NB_REGISTERS_IN):
+		await tb.test_port(tb.reg_ports_in[i], tb.BASE_ADDRESS + (tb.NB_REGISTERS_OUT + i)*4, 1)

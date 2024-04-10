@@ -1,5 +1,5 @@
 image:
-    name: docker-registry:443/embedded/locod-tb
+    name: docker-registry:443/embedded/locod-tb:latest
 
 
 test_axi_reg:
@@ -14,4 +14,34 @@ test_axi_reg:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
             - src/axi_reg/tb/waveform.ghw
+        expire_in: 1 week
+
+
+test_axi_interconnect:
+    tags:
+        - docker
+
+    script:
+        - cd src/axi_interconnect/tb/
+        - make
+
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - src/axi_interconnect/tb/waveform.ghw
+        expire_in: 1 week
+
+
+test_axi_axil_adapter:
+    tags:
+        - docker
+
+    script:
+        - cd src/axi_axil_adapter/tb/
+        - make
+
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - src/axi_axil_adapter/tb/dump.vcd
         expire_in: 1 week
