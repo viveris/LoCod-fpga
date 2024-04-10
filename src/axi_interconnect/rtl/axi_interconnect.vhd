@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- Title      : AXI_INTERCONNECT
--- Project    : LOCOD
+-- Project    : LoCod
 -------------------------------------------------------------------------------
 -- File       : axi_interconnect.vhd
 -- Author     : Colin Constans

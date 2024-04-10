@@ -1,26 +1,26 @@
-# LoCoD bitstream generation for the Ultra96 V2
+# LoCod bitstream generation for Xilinx targets
 
-This file will present the steps to generate a bitstream for the **Ultra96 V2 evaluation board** using Vivado 2020.1.
+This file will present the steps to generate a bitstream for a Xilinx target using Vivado 2022.1. For the moment, targets availables are the Ultra96 board and Enclustra Mercury+ XU7-6EG.
 
 <br>
 
 ## Requierments
 
-- Vivado 2020.1 installed
-
-- Avenet board files installed (especially the ultra96v2) : https://github.com/Avnet/bdf<br>
-Copy it in ~/.Xilinx/Vivado/2020.1/data/boards/borad_files
+- Vivado 2022.1 installed
+- A working Vivado 2022.1 ML Entreprise licence if the target is the Enclustra board
 
 <br>
 
 ## Generation of the Vivado project
 
-To generate the Vivado project, first run the script [**generate_vivado.tcl**](generate_vivado.tcl) in this directory.
+To generate the Vivado project, first run in this directory the script [**generate_vivado_project.tcl**](generate_vivado_project.tcl) and specify the target as argument with the command:
 
-This script will create a Vivado 2020.1 project named **locod-vivado**, with all the LoCoD FPGA design ready to generate the bitstream.
+```console
+vivado -mode tcl -nojournal -nolog -source generate_vivado_project.tcl -tclargs ${TARGET}
+```
 
-This project will have as target the Ultra96 V2 evaluation board.
+The targets currently available are: `ultra96`, `enclustra`
 
-Sources files are imported with soft link in the project. So, if you modify some of them in Vivado, the files are modified in the design folder.
+This script will create a Vivado 2022.1 project named **locod-vivado_${TARGET}**, with all the LoCod FPGA design ready to generate the bitstream.
 
-The script also uses specific source files, present in the directory `vivado_src/`, to connect the top IP of the LoCoD FPGA design to the Zynq Ultrascale SoC (these files are Xilinx IPs, for example AXI interconnects, SoC wrapper, etc...).
+The script uses specific source files and other TCL scripts, present in the directory `${TARGET}/src`, to connect the top IP of the LoCod FPGA design to the Xilinx SoC (these files are Xilinx IPs, for example AXI interconnects, SoC Processing system, etc...).

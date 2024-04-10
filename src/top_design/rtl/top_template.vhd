@@ -122,7 +122,7 @@ signal S_AXIL_out : AXI4Lite_s_to_m;
 signal registers_out : reg_array(NB_REGISTERS_OUT-1 downto 0);
 signal registers_in : reg_array(NB_REGISTERS_IN-1 downto 0);
 
--- Array of AXI Lite signals between Locod accelerators and AXIL Interconnect
+-- Array of AXI Lite signals between LoCod accelerators and AXIL Interconnect
 signal M_AXIL_out_array : AXI4Lite_m_to_s_array(NB_ACCELERATORS-1 downto 0);
 signal M_AXIL_in_array : AXI4Lite_s_to_m_array(NB_ACCELERATORS-1 downto 0);
 

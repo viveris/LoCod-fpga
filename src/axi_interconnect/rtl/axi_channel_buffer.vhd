@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- Title      : AXI_CHANNEL BUFFER
--- Project    : LOCOD
+-- Project    : LoCod
 -------------------------------------------------------------------------------
 -- File       : axi_channel_buffer.vhd
 -- Author     : Colin Constans

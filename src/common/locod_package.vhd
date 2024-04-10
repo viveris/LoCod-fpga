@@ -6,7 +6,7 @@ package locod_pkg is
         constant AXIL_ADDR_WIDTH        : integer := 32;
         constant AXIL_DATA_WIDTH        : integer := 32;
         
-        -- Locod types definitions
+        -- LoCod types definitions
         type reg_array is array(natural range <>) of std_logic_vector(AXIL_DATA_WIDTH-1 downto 0);
 
         type AXI4Lite_m_to_s is record
@@ -38,7 +38,7 @@ package locod_pkg is
         type AXI4Lite_s_to_m_array is array(natural range <>) of AXI4Lite_s_to_m;
 
 
-        -- Locod constants definitions
+        -- LoCod constants definitions
         constant c_m_to_s : AXI4Lite_m_to_s := (
             awaddr => (others=>'0'),
             awprot => (others=>'0'),

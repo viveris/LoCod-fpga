@@ -1,4 +1,4 @@
-# Xilinx available targets for Locod FPGA design :
+# Xilinx available targets for LoCod FPGA design :
 # ultra96
 # enclustra
 

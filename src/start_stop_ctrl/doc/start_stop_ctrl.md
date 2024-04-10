@@ -17,7 +17,7 @@ The controller provides 4 outputs status signals :
 - duration_count : when running, the time ellapsed since the beginning
 - duration_count_latched : when finished, the total process time of the Bambu accelerator
 
-Finally, there are 3 signals connected to the Bambi component to control it :
+Finally, there are 3 signals connected to the Bambu component to control it :
 
 - ip_start to start the IP
 - ip_reset to reset te IP

@@ -1,6 +1,6 @@
-# LoCoD FPGA design architecture
+# LoCod FPGA design architecture
 
-Bellow is presented the global FPGA architecture of the LoCoD project :
+Bellow is presented the global FPGA architecture of the LoCod project :
 
 <img src="images/global_arch.drawio.svg" width="700em"/>
 

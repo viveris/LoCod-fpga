@@ -6,7 +6,7 @@
 
 This IP provides registers accessible through an AXI4 Lite interface.
 
-These registers are designed to be interfaced with the differents accelerator blocs of the Locod design to control them : start, reset, input address and output address.
+These registers are designed to be interfaced with the differents accelerator blocs of the LoCod design to control them : start, reset, input address and output address.
 
 There is a table of output registers and a table of input registers, the number of each can be changed using generic parameters to suit the design. Each register is the same size than the AXIL data bus. The addresses are coded over integers. Therefore, the first register is at the address 0, the second at the address 4, etc...
 
@@ -22,7 +22,7 @@ This IP regroup the followings files :
 
 ## Requierments
 
-The Locod package ([locod_package_xilinx.vhd](../../common/locod_package.vhd)) is needed to compile the AXI Reg component (to get the register arrays types and AXIL constants).
+The LoCod package ([locod_package_xilinx.vhd](../../common/locod_package.vhd)) is needed to compile the AXI Reg component (to get the register arrays types and AXIL constants).
 
 <br>
 

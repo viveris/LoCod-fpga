@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- Title      : AXI_SLAVE_INTERFACE
--- Project    : LOCOD
+-- Project    : LoCod
 -------------------------------------------------------------------------------
 -- File       : axi_slave_interface.vhd
 -- Author     : Colin Constans

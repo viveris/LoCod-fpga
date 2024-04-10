@@ -1,5 +1,5 @@
 -- Title      : AXI_INTERCONNECT_IP
--- Project    : LOCOD
+-- Project    : LoCod
 -------------------------------------------------------------------------------
 -- File       : axi_interconnect_ip.vhd
 -- Author     : Colin Constans
